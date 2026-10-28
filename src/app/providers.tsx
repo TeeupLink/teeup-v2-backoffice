@@ -1,5 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
+import { ConfirmHost } from '@/components/dialog/ConfirmHost';
+import { Toaster } from '@/components/feedback/Toaster';
 import { ApiError } from '@/lib/api/errors';
 
 function createQueryClient() {
@@ -19,5 +21,11 @@ function createQueryClient() {
 const queryClient = createQueryClient();
 
 export function Providers({ children }: { children: ReactNode }) {
-  return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+  return (
+    <QueryClientProvider client={queryClient}>
+      {children}
+      <Toaster />
+      <ConfirmHost />
+    </QueryClientProvider>
+  );
 }
