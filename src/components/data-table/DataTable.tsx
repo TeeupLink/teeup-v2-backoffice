@@ -197,7 +197,8 @@ export function DataTable<T>({ list, query, columns, getRowId, rowHref, bulkActi
         className={cn(
           'border-b border-slate-100 transition-colors',
           rowHref && 'cursor-pointer',
-          row.getIsSelected() ? 'bg-primary-50' : 'hover:bg-slate-50',
+          // 가로 스크롤 시 고정 첫 칸이 배경을 물려받도록 행에 불투명 배경을 준다
+          row.getIsSelected() ? 'bg-primary-50' : 'bg-white hover:bg-slate-50',
         )}
       >
         {row.getVisibleCells().map((cell, i) => {

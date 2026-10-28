@@ -1,6 +1,8 @@
+import type { ReactElement } from 'react';
 import { createBrowserRouter, Navigate, Outlet, type RouteObject } from 'react-router';
 import { DashboardPage } from '@/features/dashboard/DashboardPage';
 import { LoginPage } from '@/features/auth/LoginPage';
+import { UsersListPage } from '@/features/users/UsersListPage';
 import type { Access, Resource } from '@/lib/auth/permissions';
 import { AuthProvider } from './auth/AuthProvider';
 import { RequireAccess, RequireAuth } from './auth/guards';
@@ -10,6 +12,8 @@ import { ForbiddenPage } from './pages/ForbiddenPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 
 type Area = {
+  /** 이식 완료된 목록 화면. 없으면 준비 중 화면 */
+  list?: ReactElement;
   /** 목록 경로. 하위 경로(/new, /:id, /:id/tab, /:id/edit)는 같은 권한을 쓴다 */
   path: string;
   resource: Resource;
@@ -25,7 +29,7 @@ const AREAS: Area[] = [
   { path: 'join-requests', resource: 'joinRequests', title: '가입신청', issue: 21 },
   { path: 'inquiries', resource: 'inquiries', title: '1:1 문의', issue: 22 },
   { path: 'reports', resource: 'reports', title: '신고', issue: 29 },
-  { path: 'users', resource: 'users', writePaths: ['new', ':id/edit'], title: '회원', issue: 20 },
+  { path: 'users', resource: 'users', writePaths: ['new', ':id/edit'], title: '회원', issue: 20, list: <UsersListPage /> },
   { path: 'clubs', resource: 'clubs', writePaths: ['new', ':id/edit'], title: '클럽', issue: 24 },
   { path: 'rounds', resource: 'meetings', writePaths: ['new', ':id/edit'], title: '라운딩', issue: 23 },
   { path: 'socials', resource: 'meetings', writePaths: ['new', ':id/edit'], title: '소셜', issue: 25 },
@@ -51,7 +55,7 @@ function areaRoutes(a: Area): RouteObject[] {
   const writes = (a.writePaths ?? []).map((p) => ({ path: `${a.path}/${p}`, element: page }));
   return [
     guarded(a.resource, 'read', [
-      { path: a.path, element: page },
+      { path: a.path, element: a.list ?? page },
       { path: `${a.path}/*`, element: page },
     ]),
     ...(writes.length ? [guarded(a.resource, 'write', writes)] : []),

@@ -1,5 +1,5 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
-import { api } from '@/lib/api/client';
+import { api, type Query } from '@/lib/api/client';
 import { toPage, type Page } from '@/lib/api/envelope';
 import { toApiQuery, type ListState } from './listState';
 
@@ -11,13 +11,19 @@ export function useListQuery<T>(
   key: string,
   path: string,
   state: ListState,
-  opts: { extraQuery?: Record<string, string | number | undefined>; enabled?: boolean } = {},
+  opts: {
+    extraQuery?: Record<string, string | number | undefined>;
+    enabled?: boolean;
+    /** 정규화 전 엔드포인트의 파라미터 이름 변환 (BE#46 전환기). 도메인 api.ts 에 둔다 */
+    mapQuery?: (q: Record<string, unknown>) => Record<string, unknown>;
+  } = {},
 ) {
   return useQuery<Page<T>>({
     queryKey: [key, 'list', path, state, opts.extraQuery ?? {}],
     queryFn: async ({ signal }) => {
       // limit: 정규화 전 백엔드(BE#46)는 페이지 크기를 limit 으로 받는다. 정규화 후 제거
-      const query = { ...toApiQuery(state), limit: state.size, ...opts.extraQuery };
+      const base = { ...toApiQuery(state), limit: state.size, ...opts.extraQuery };
+      const query = (opts.mapQuery ? opts.mapQuery(base) : base) as Query;
       const raw = await api<unknown>(path, { query, signal });
       return toPage<T>(raw, state);
     },

@@ -44,9 +44,9 @@ describe('라우트 가드', () => {
     expect(await screen.findByText('이 화면에 접근할 권한이 없습니다')).toBeInTheDocument();
   });
 
-  it('조회 권한이 있으면 목록에 들어간다', async () => {
-    renderAt('/users', meAs('SUPPORT_ADMIN'));
-    expect(await screen.findByText('회원 — 준비 중')).toBeInTheDocument();
+  it('조회 권한이 있으면 들어가고, 쓰기 작업은 보이지 않는다', async () => {
+    renderAt('/clubs', meAs('MEETING_ADMIN'));
+    expect(await screen.findByText('클럽 — 준비 중')).toBeInTheDocument();
   });
 
   it('메뉴는 역할 범위만 보인다', async () => {

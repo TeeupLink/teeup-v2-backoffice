@@ -4,7 +4,7 @@ import { ApiError, parseErrorBody } from './errors';
 const BASE = '/api/v1';
 const MUTATING = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
 
-type Query = Record<string, string | number | boolean | null | undefined | (string | number)[]>;
+export type Query = Record<string, string | number | boolean | null | undefined | (string | number)[]>;
 
 export type RequestOptions = {
   method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
