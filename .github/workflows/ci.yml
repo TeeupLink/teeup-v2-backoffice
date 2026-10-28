@@ -3,25 +3,19 @@
 # 배포는 이 워크플로우가 하지 않습니다. golf 루트 Dockerfile 이 `npm run build` 로 dist 를 만들고
 # nginx 가 서빙합니다(CLAUDE.md "배포" 참조). CI 는 병합 조건(타입·린트·테스트·빌드)만 검사합니다.
 #
-# [활성화 시점]
-# 재구축 기반 단계(#17)에서 TypeScript·Vitest 스크립트가 생기면 아래 on: 블록의 주석을 해제합니다.
-# 그 전에는 기존 JS 프로젝트에 typecheck/test 스크립트가 없어 의미 있는 검사가 되지 않으므로 수동 실행만 둡니다.
-# 스크립트는 --if-present 로 호출하므로 없는 단계는 건너뜁니다.
+# [활성화] #17 에서 TypeScript·Vitest 스크립트가 생겨 PR·push 트리거를 켰습니다. 재구축 중에는 rebuild 브랜치도 검사합니다.
 #
 # [브랜치 전략] feature/* -> dev -> main (운영 긴급 수정은 hotfix/* -> main)
 # main·dev 는 branch protection 으로 직접 push 를 막고 PR + 이 CI 통과를 요구하세요.
 
 name: CI
 
-# on:
-#   pull_request:
-#     branches: [ main, dev ]
-#   push:
-#     branches: [ main, dev ]
-#   workflow_dispatch:
-
 on:
-  workflow_dispatch:  # 수동 실행만 가능 (#17 전까지)
+  pull_request:
+    branches: [ main, dev, rebuild ]
+  push:
+    branches: [ main, dev, rebuild ]
+  workflow_dispatch:
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -31,11 +25,6 @@ jobs:
   frontend:
     name: Typecheck · Lint · Test · Build
     runs-on: ubuntu-latest
-    env:
-      # vite.config 가 요구하는 값. 빌드 검증용 더미이며 시크릿이 아니다
-      VITE_ADMIN_PORT: '3000'
-      VITE_BACKEND_PORT: '7777'
-      VITE_API_BASE_URL: 'http://localhost:7777'
     steps:
       - uses: actions/checkout@v4
 
