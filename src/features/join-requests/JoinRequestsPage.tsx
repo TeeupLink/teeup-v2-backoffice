@@ -15,11 +15,13 @@ import { filterKeys, type FilterDef } from '@/components/filter-bar/types';
 import { LookupSelect } from '@/components/form/LookupSelect';
 import { lookupLabel } from '@/components/form/lookupLabels';
 import { PageHeader } from '@/components/layout/PageHeader';
+import { RouteTabs } from '@/components/layout/RouteTabs';
 import { Button } from '@/components/ui/Button';
 import { errorMessage } from '@/lib/api/errors';
 import { formatDateTime } from '@/lib/format';
 import { usePII } from '@/lib/usePII';
 import { JOIN_REQUESTS_PATH, processJoinRequests, type JoinRequestRow } from './api';
+import { JOIN_TABS } from './tabs';
 
 // SCR-020 가입신청 목록 (화면설계서 4.3) — 대시보드 카드 → 전체 선택 → 승인 = 3클릭
 const DEFS: FilterDef[] = [
@@ -129,6 +131,7 @@ export function JoinRequestsPage() {
   return (
     <>
       <PageHeader title="가입신청" description="전체 클럽의 가입 대기 신청입니다. 여러 건을 선택해 한 번에 처리할 수 있습니다." />
+      <RouteTabs tabs={JOIN_TABS} label="가입신청 탭" />
       <div className="mb-3">
         <FilterBar list={list} defs={DEFS} searchPlaceholder="신청자 닉네임·실명" />
       </div>

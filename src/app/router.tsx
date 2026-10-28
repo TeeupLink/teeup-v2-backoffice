@@ -1,9 +1,12 @@
 import type { ReactElement } from 'react';
 import { createBrowserRouter, Navigate, Outlet, type RouteObject } from 'react-router';
+import { AuditLogsPage } from '@/features/audit-logs/AuditLogsPage';
+import { AuditMonthlyPage } from '@/features/audit-logs/AuditMonthlyPage';
 import { DashboardPage } from '@/features/dashboard/DashboardPage';
 import { LoginPage } from '@/features/auth/LoginPage';
 import { InquiriesListPage } from '@/features/inquiries/InquiriesListPage';
 import { InquiryDetailPage } from '@/features/inquiries/InquiryDetailPage';
+import { JoinHistoryPage } from '@/features/join-requests/JoinHistoryPage';
 import { JoinRequestsPage } from '@/features/join-requests/JoinRequestsPage';
 import { UsersListPage } from '@/features/users/UsersListPage';
 import type { Access, Resource } from '@/lib/auth/permissions';
@@ -22,6 +25,8 @@ type Area = {
   /** 목록 경로. 하위 경로(/new, /:id, /:id/tab, /:id/edit)는 같은 권한을 쓴다 */
   path: string;
   resource: Resource;
+  /** 목록·상세 외에 같은 읽기 권한으로 여는 하위 화면 (경로는 area 기준 상대) */
+  pages?: Record<string, ReactElement>;
   /** 목록·상세 조회 외 경로(new·edit)에 필요한 권한 */
   writePaths?: string[];
   title: string;
@@ -31,7 +36,7 @@ type Area = {
 // 라우트 표: docs/02.기획문서/정보구조도.md 2장. 화면이 이식되면 element 를 실제 페이지로 바꾼다.
 const AREAS: Area[] = [
   { path: 'dashboard/kpi', resource: 'kpi', title: 'KPI 대시보드', issue: 32 },
-  { path: 'join-requests', resource: 'joinRequests', title: '가입신청', issue: 21, list: <JoinRequestsPage /> },
+  { path: 'join-requests', resource: 'joinRequests', title: '가입신청', issue: 21, list: <JoinRequestsPage />, pages: { history: <JoinHistoryPage /> } },
   { path: 'inquiries', resource: 'inquiries', title: '1:1 문의', issue: 22, list: <InquiriesListPage />, detail: <InquiryDetailPage /> },
   { path: 'reports', resource: 'reports', title: '신고', issue: 29 },
   { path: 'users', resource: 'users', writePaths: ['new', ':id/edit'], title: '회원', issue: 20, list: <UsersListPage /> },
@@ -47,7 +52,7 @@ const AREAS: Area[] = [
   { path: 'billing/failures', resource: 'payments', title: '청구 실패', issue: 31 },
   { path: 'billing/sandbox', resource: 'billingSandbox', title: '빌링 샌드박스', issue: 31 },
   { path: 'admins', resource: 'admins', title: '관리자', issue: 27 },
-  { path: 'audit-logs', resource: 'auditLogs', title: '감사 로그', issue: 28 },
+  { path: 'audit-logs', resource: 'auditLogs', title: '감사 로그', issue: 28, list: <AuditLogsPage />, pages: { monthly: <AuditMonthlyPage /> } },
   { path: 'profile', resource: 'profile', title: '내 프로필', issue: 27 },
 ];
 
@@ -61,6 +66,7 @@ function areaRoutes(a: Area): RouteObject[] {
   return [
     guarded(a.resource, 'read', [
       { path: a.path, element: a.list ?? page },
+      ...Object.entries(a.pages ?? {}).map(([p, element]) => ({ path: `${a.path}/${p}`, element })),
       ...(a.detail ? [{ path: `${a.path}/:id/*`, element: a.detail }] : []),
       { path: `${a.path}/*`, element: page },
     ]),

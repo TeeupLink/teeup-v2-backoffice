@@ -4,9 +4,9 @@ import { cn } from '@/lib/cn';
 export type RouteTab = { to: string; label: string; count?: number | null; end?: boolean };
 
 /** 상세 탭 — 탭 = URL 경로 세그먼트 (REQ-014, /x/:id/{tab}) */
-export function RouteTabs({ tabs }: { tabs: RouteTab[] }) {
+export function RouteTabs({ tabs, label = '상세 탭' }: { tabs: RouteTab[]; label?: string }) {
   return (
-    <nav aria-label="상세 탭" className="mb-5 flex gap-1 overflow-x-auto border-b border-slate-200">
+    <nav aria-label={label} className="mb-5 flex gap-1 overflow-x-auto border-b border-slate-200">
       {tabs.map((t) => (
         <NavLink
           key={t.to}

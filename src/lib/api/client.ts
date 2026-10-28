@@ -100,3 +100,28 @@ export async function api<T = unknown>(path: string, opts: RequestOptions = {}):
   const text = await res.text();
   return (text ? JSON.parse(text) : undefined) as T;
 }
+
+/** 파일 내려받기 (CSV 등). 인증·에러 처리는 api() 와 같고, 응답 본문을 파일로 저장한다 */
+export async function download(path: string, opts: Pick<RequestOptions, 'query'> & { filename: string }): Promise<void> {
+  let res: Response;
+  try {
+    res = await send(path, { query: opts.query });
+  } catch {
+    throw new ApiError(0, '서버에 연결할 수 없습니다');
+  }
+  if (!res.ok) {
+    const err = await toError(res);
+    if (err.isAuth) onAuthError?.();
+    throw err;
+  }
+  const disposition = res.headers.get('content-disposition') ?? '';
+  const filename = /filename="?([^";]+)"?/.exec(disposition)?.[1] ?? opts.filename;
+  const url = URL.createObjectURL(await res.blob());
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
