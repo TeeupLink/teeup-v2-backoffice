@@ -58,7 +58,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       retry: () => void meQuery.refetch(),
       login,
       logout,
-      can: (resource, need) => can(me?.role, resource, need),
+      can: (resource, need = 'read') => {
+        // 백엔드가 권한을 내려주면 그것이 기준이다 (프론트 표와 어긋나면 백엔드가 맞다)
+        const server = me?.permissions?.[resource];
+        if (server !== undefined) return server === 'write' || (need === 'read' && server === 'read');
+        return can(me?.role, resource, need);
+      },
     }),
     [me, hasToken, meQuery, login, logout],
   );

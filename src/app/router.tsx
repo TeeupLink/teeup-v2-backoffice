@@ -2,6 +2,9 @@ import type { ReactElement } from 'react';
 import { createBrowserRouter, Navigate, Outlet, type RouteObject } from 'react-router';
 import { DashboardPage } from '@/features/dashboard/DashboardPage';
 import { LoginPage } from '@/features/auth/LoginPage';
+import { InquiriesListPage } from '@/features/inquiries/InquiriesListPage';
+import { InquiryDetailPage } from '@/features/inquiries/InquiryDetailPage';
+import { JoinRequestsPage } from '@/features/join-requests/JoinRequestsPage';
 import { UsersListPage } from '@/features/users/UsersListPage';
 import type { Access, Resource } from '@/lib/auth/permissions';
 import { AuthProvider } from './auth/AuthProvider';
@@ -14,6 +17,8 @@ import { NotFoundPage } from './pages/NotFoundPage';
 type Area = {
   /** 이식 완료된 목록 화면. 없으면 준비 중 화면 */
   list?: ReactElement;
+  /** 이식 완료된 상세 화면 (/:id 와 하위 탭 /:id/*) */
+  detail?: ReactElement;
   /** 목록 경로. 하위 경로(/new, /:id, /:id/tab, /:id/edit)는 같은 권한을 쓴다 */
   path: string;
   resource: Resource;
@@ -26,8 +31,8 @@ type Area = {
 // 라우트 표: docs/02.기획문서/정보구조도.md 2장. 화면이 이식되면 element 를 실제 페이지로 바꾼다.
 const AREAS: Area[] = [
   { path: 'dashboard/kpi', resource: 'kpi', title: 'KPI 대시보드', issue: 32 },
-  { path: 'join-requests', resource: 'joinRequests', title: '가입신청', issue: 21 },
-  { path: 'inquiries', resource: 'inquiries', title: '1:1 문의', issue: 22 },
+  { path: 'join-requests', resource: 'joinRequests', title: '가입신청', issue: 21, list: <JoinRequestsPage /> },
+  { path: 'inquiries', resource: 'inquiries', title: '1:1 문의', issue: 22, list: <InquiriesListPage />, detail: <InquiryDetailPage /> },
   { path: 'reports', resource: 'reports', title: '신고', issue: 29 },
   { path: 'users', resource: 'users', writePaths: ['new', ':id/edit'], title: '회원', issue: 20, list: <UsersListPage /> },
   { path: 'clubs', resource: 'clubs', writePaths: ['new', ':id/edit'], title: '클럽', issue: 24 },
@@ -56,6 +61,7 @@ function areaRoutes(a: Area): RouteObject[] {
   return [
     guarded(a.resource, 'read', [
       { path: a.path, element: a.list ?? page },
+      ...(a.detail ? [{ path: `${a.path}/:id/*`, element: a.detail }] : []),
       { path: `${a.path}/*`, element: page },
     ]),
     ...(writes.length ? [guarded(a.resource, 'write', writes)] : []),

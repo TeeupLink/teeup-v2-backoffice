@@ -1,5 +1,5 @@
 import { api } from '@/lib/api/client';
-import { isAdminRole, type AdminRole } from '@/lib/auth/permissions';
+import { isAdminRole, type Access, type AdminRole, type Resource } from '@/lib/auth/permissions';
 
 export const ME_KEY = ['me'] as const;
 
@@ -10,6 +10,8 @@ export type Me = {
   phone_number: string | null;
   role: AdminRole | null;
   status: string;
+  /** 백엔드 권한 표(BE#46). 없으면 프론트 표로 판단 */
+  permissions?: Partial<Record<Resource, Access | null>>;
 };
 
 type MeResponse = Omit<Me, 'role'> & { role?: unknown };
