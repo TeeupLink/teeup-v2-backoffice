@@ -4,6 +4,7 @@ import { Link, useLocation } from 'react-router';
 import { useAuth } from '@/app/auth/useAuth';
 import { ROLE_LABEL } from '@/lib/auth/permissions';
 import { GlobalSearch } from './GlobalSearch';
+import { MaskToggle } from './MaskToggle';
 import { findNav } from './nav';
 import { NotificationBell } from './NotificationBell';
 
@@ -39,10 +40,10 @@ export function Header({ onOpenMobile }: { onOpenMobile: () => void }) {
         ) : null}
       </nav>
 
-      {/* 마스킹 토글은 #32 에서 이 자리에 들어온다 */}
       {me && (
         <>
           <GlobalSearch />
+          <MaskToggle />
           <NotificationBell />
         </>
       )}

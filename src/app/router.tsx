@@ -26,6 +26,7 @@ import { SocialsListPage } from '@/features/socials/SocialsListPage';
 import { InquiriesListPage } from '@/features/inquiries/InquiriesListPage';
 import { InquiryDetailPage } from '@/features/inquiries/InquiryDetailPage';
 import { JoinHistoryPage } from '@/features/join-requests/JoinHistoryPage';
+import { KpiPage } from '@/features/kpi/KpiPage';
 import { JoinRequestsPage } from '@/features/join-requests/JoinRequestsPage';
 import { NoticeDetailPage } from '@/features/notices/NoticeDetailPage';
 import { NoticeFormPage as SystemNoticeFormPage } from '@/features/notices/NoticeFormPage';
@@ -65,7 +66,7 @@ type Area = {
 
 // 라우트 표: docs/02.기획문서/정보구조도.md 2장. 화면이 이식되면 element 를 실제 페이지로 바꾼다.
 const AREAS: Area[] = [
-  { path: 'dashboard/kpi', resource: 'kpi', title: 'KPI 대시보드', issue: 32 },
+  { path: 'dashboard/kpi', resource: 'kpi', title: 'KPI 대시보드', issue: 32, list: <KpiPage /> },
   { path: 'join-requests', resource: 'joinRequests', title: '가입신청', issue: 21, list: <JoinRequestsPage />, pages: { history: <JoinHistoryPage /> } },
   { path: 'inquiries', resource: 'inquiries', title: '1:1 문의', issue: 22, list: <InquiriesListPage />, detail: <InquiryDetailPage /> },
   {

@@ -72,3 +72,16 @@ describe('헤더 통합 검색 (F-015)', () => {
     await waitFor(() => expect(router.state.location.pathname).toBe('/users/7'));
   });
 });
+
+describe('헤더 마스킹 토글 (F-131)', () => {
+  it('켜면 "마스킹 중"으로 바뀌고 브라우저에 기억한다', async () => {
+    const user = userEvent.setup();
+    renderApp('/dashboard', 'SUPPORT_ADMIN', dash);
+    const btn = await screen.findByRole('button', { name: '마스킹' });
+    expect(btn).toHaveAttribute('aria-pressed', 'false');
+    await user.click(btn);
+    expect(screen.getByRole('button', { name: '마스킹 중' })).toHaveAttribute('aria-pressed', 'true');
+    expect(localStorage.getItem('teeup_admin_mask')).toBe('1');
+    expect(maskMode.get()).toBe(true);
+  });
+});
