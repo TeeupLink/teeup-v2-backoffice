@@ -52,13 +52,14 @@ export function UsersListPage() {
       col.accessor('club_count', { header: '가입 클럽', meta: { align: 'right' }, cell: (c) => c.getValue() ?? 0 }),
       col.accessor('status', { header: '상태', cell: (c) => <StatusBadge domain="user" value={c.getValue()} /> }),
       col.accessor('created_at', { header: '가입일', meta: { sortKey: 'created_at' }, cell: (c) => formatDate(c.getValue()) }),
+      col.accessor('last_login_at', { header: '최근 로그인', cell: (c) => formatDate(c.getValue()) }),
     ],
     [pii],
   );
 
   const bulkActions: BulkAction[] = writable
     ? [
-        { key: 'activate', label: '활성화', run: (ids) => setUsersStatus(ids, 'ACTIVE') },
+        { key: 'activate', label: '활성화', run: (ids) => setUsersStatus(ids, 'activate') },
         {
           key: 'deactivate',
           label: '비활성화',
@@ -70,7 +71,7 @@ export function UsersListPage() {
             tone: 'danger',
             reason: { required: true, placeholder: '감사 로그에 남습니다' },
           }),
-          run: (ids) => setUsersStatus(ids, 'DEACTIVATED'),
+          run: (ids, reason) => setUsersStatus(ids, 'deactivate', reason),
         },
       ]
     : [];
