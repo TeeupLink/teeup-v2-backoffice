@@ -172,7 +172,7 @@ describe('SCR-052 정산 탭', () => {
       other_fee: 60000,
       total_cost: 490000,
       green_fee_participant_ids: [1, 2],
-      other_expense_items: [{ title: '식사', amount: 60000, participant_ids: [1, 2], participants: [10, 9] }],
+      other_expense_items: [{ title: '식사', amount: 60000, participant_ids: [1, 2] }],
     });
   });
 });

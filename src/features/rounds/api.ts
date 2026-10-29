@@ -42,12 +42,10 @@ export type SettlementInput = { green_fee: number; caddy_fee: number; cart_fee: 
 
 /**
  * 라운딩 정산 저장 (덮어쓰기). 이 화면은 확정 참가자 전원 N분의 1 만 다룬다.
- * 대상은 참가자 id(participant_ids)로 보낸다 — user_id·guest_id 를 한 칸에 섞어 보내면 번호가 겹칠 수 있다.
- * 기타 항목은 백엔드 검증이 participants 를 요구해 둘 다 보낸다.
+ * 대상은 참가자 id 로만 보낸다 — 회원·게스트 id 는 번호가 겹칠 수 있다 (BE#61).
  */
 export function saveSettlement(id: number, input: SettlementInput, confirmed: Participant[]) {
   const pids = confirmed.map((p) => p.id);
-  const legacy = confirmed.map((p) => p.user_id ?? p.guest_id);
   const other = input.others.reduce((a, o) => a + o.amount, 0);
   return api(`${M}/${id}/settlement/rounding`, {
     method: 'POST',
@@ -62,7 +60,7 @@ export function saveSettlement(id: number, input: SettlementInput, confirmed: Pa
       green_fee_participant_ids: pids,
       caddy_fee_participant_ids: pids,
       cart_fee_participant_ids: pids,
-      other_expense_items: input.others.map((o) => ({ title: o.title, amount: o.amount, participant_ids: pids, participants: legacy })),
+      other_expense_items: input.others.map((o) => ({ title: o.title, amount: o.amount, participant_ids: pids })),
     },
   });
 }
