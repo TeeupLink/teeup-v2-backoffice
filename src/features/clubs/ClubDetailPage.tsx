@@ -13,6 +13,7 @@ import { RouteTabs } from '@/components/layout/RouteTabs';
 import { Button } from '@/components/ui/Button';
 import { JoinRequestsTable } from '@/features/join-requests/JoinRequestsPage';
 import { RoundsTable } from '@/features/rounds/RoundsListPage';
+import { SocialsTable } from '@/features/socials/SocialsListPage';
 import { api } from '@/lib/api/client';
 import { ApiError, errorMessage } from '@/lib/api/errors';
 import { deleteClub, fetchClub, setClubStatus } from './api';
@@ -144,7 +145,8 @@ export function ClubDetailPage() {
           { to: `${base}/notices`, label: '공지' },
           { to: `${base}/regulations`, label: '규정' },
           { to: `${base}/fees`, label: '회비' },
-          { to: `${base}/meetings`, label: '모임' },
+          { to: `${base}/meetings`, label: '라운딩', count: c.round_count || null },
+          { to: `${base}/socials`, label: '소셜', count: c.social_count || null },
         ]}
       />
       <Routes>
@@ -155,6 +157,7 @@ export function ClubDetailPage() {
         <Route path="regulations" element={<RegulationsTab clubId={id} writable={writable && !deleted} />} />
         <Route path="fees" element={<FeesTab clubId={id} writable={writable && !deleted} />} />
         <Route path="meetings" element={can('meetings') ? <RoundsTable clubId={id} /> : <NotFoundPage />} />
+        <Route path="socials" element={can('meetings') ? <SocialsTable clubId={id} /> : <NotFoundPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </>

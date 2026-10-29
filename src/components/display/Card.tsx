@@ -19,7 +19,7 @@ export function StatCard({ label, value, hint, tone = 'default' }: { label: stri
   return (
     <div className={cn('rounded-xl bg-white p-5 shadow-sm ring-1', tone === 'highlight' ? 'ring-2 ring-primary-500' : 'ring-slate-200')}>
       <p className="text-sm text-slate-500">{label}</p>
-      <p className="mt-1 text-3xl font-bold tabular text-slate-900">{value}</p>
+      <div className="mt-1 text-3xl font-bold tabular text-slate-900">{value}</div>
       {hint && <div className="mt-2 text-sm">{hint}</div>}
     </div>
   );

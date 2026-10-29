@@ -13,9 +13,9 @@ import { updateRoundStatus } from '../api';
 import { FORMATION_MODE, SETTLEMENT_METHOD, STATUS_FLOW, SUBTYPE } from '../labels';
 import type { MeetingStatus, RoundDetail } from '../types';
 
-/** 예정 → 진행중 → 완료 진행 표시. 취소면 따로 표시 */
-function StatusFlow({ status }: { status: MeetingStatus }) {
-  if (status === 'CANCELED') return <p className="text-sm font-medium text-red-700">취소된 라운딩입니다</p>;
+/** 예정 → 진행중 → 완료 진행 표시. 취소면 따로 표시 (소셜 개요도 같이 쓴다) */
+export function StatusFlow({ status, noun = '라운딩' }: { status: MeetingStatus; noun?: string }) {
+  if (status === 'CANCELED') return <p className="text-sm font-medium text-red-700">취소된 {noun}입니다</p>;
   const at = STATUS_FLOW.indexOf(status as (typeof STATUS_FLOW)[number]);
   return (
     <ol className="flex items-center gap-2" aria-label="진행 상태">

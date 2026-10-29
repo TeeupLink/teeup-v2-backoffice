@@ -12,6 +12,9 @@ import { LoginPage } from '@/features/auth/LoginPage';
 import { RoundDetailPage } from '@/features/rounds/RoundDetailPage';
 import { RoundFormPage } from '@/features/rounds/RoundFormPage';
 import { RoundsListPage } from '@/features/rounds/RoundsListPage';
+import { SocialDetailPage } from '@/features/socials/SocialDetailPage';
+import { SocialFormPage } from '@/features/socials/SocialFormPage';
+import { SocialsListPage } from '@/features/socials/SocialsListPage';
 import { InquiriesListPage } from '@/features/inquiries/InquiriesListPage';
 import { InquiryDetailPage } from '@/features/inquiries/InquiryDetailPage';
 import { JoinHistoryPage } from '@/features/join-requests/JoinHistoryPage';
@@ -78,8 +81,26 @@ const AREAS: Area[] = [
       ':id/regulations/:rid/edit': <RegulationFormPage />,
     },
   },
-  { path: 'rounds', resource: 'meetings', writePaths: ['new', ':id/edit'], title: '라운딩', issue: 23, list: <RoundsListPage />, detail: <RoundDetailPage />, forms: { new: <RoundFormPage />, ':id/edit': <RoundFormPage /> } },
-  { path: 'socials', resource: 'meetings', writePaths: ['new', ':id/edit'], title: '소셜', issue: 25 },
+  {
+    path: 'rounds',
+    resource: 'meetings',
+    writePaths: ['new', ':id/edit'],
+    title: '라운딩',
+    issue: 23,
+    list: <RoundsListPage />,
+    detail: <RoundDetailPage />,
+    forms: { new: <RoundFormPage />, ':id/edit': <RoundFormPage /> },
+  },
+  {
+    path: 'socials',
+    resource: 'meetings',
+    writePaths: ['new', ':id/edit'],
+    title: '소셜',
+    issue: 25,
+    list: <SocialsListPage />,
+    detail: <SocialDetailPage />,
+    forms: { new: <SocialFormPage />, ':id/edit': <SocialFormPage /> },
+  },
   { path: 'notices', resource: 'content', title: '공지', issue: 26 },
   { path: 'faq', resource: 'content', title: 'FAQ', issue: 26 },
   { path: 'terms', resource: 'content', title: '약관', issue: 30 },
