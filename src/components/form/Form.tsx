@@ -17,7 +17,7 @@ export function FormSection({ title, description, id, children }: { title: strin
 }
 
 /**
- * 라벨 + 컨트롤 + 에러. 라벨은 데스크톱에서 왼쪽 160px, 모바일에서 위.
+ * 라벨 + 컨트롤 + 에러. 라벨은 데스크톱에서 왼쪽 160px, 모바일에서 위. stacked 면 항상 위 (좁은 패널·모달).
  * children 은 (id, invalid) 를 받아 컨트롤을 그린다 — 라벨·aria 연결을 빠뜨리지 않기 위함.
  */
 export function FormField({
@@ -25,9 +25,11 @@ export function FormField({
   required,
   error,
   hint,
+  stacked,
   children,
 }: {
   label: string;
+  stacked?: boolean;
   required?: boolean;
   error?: string;
   hint?: string;
@@ -36,8 +38,8 @@ export function FormField({
   const id = useId();
   const msgId = `${id}-msg`;
   return (
-    <div className="grid gap-1.5 md:grid-cols-[160px_1fr] md:gap-4">
-      <label htmlFor={id} className="pt-2 text-sm font-medium text-slate-700">
+    <div className={cn('grid gap-1.5', !stacked && 'md:grid-cols-[160px_1fr] md:gap-4')}>
+      <label htmlFor={id} className={cn('text-sm font-medium text-slate-700', !stacked && 'pt-2')}>
         {label}
         {required && <span className="text-red-600"> *</span>}
       </label>

@@ -14,6 +14,9 @@ import { DashboardPage } from '@/features/dashboard/DashboardPage';
 import { FaqFormPage } from '@/features/faq/FaqFormPage';
 import { FaqListPage } from '@/features/faq/FaqListPage';
 import { LoginPage } from '@/features/auth/LoginPage';
+import { BlocksPage } from '@/features/reports/BlocksPage';
+import { ReportDetailPage } from '@/features/reports/ReportDetailPage';
+import { ReportsListPage } from '@/features/reports/ReportsListPage';
 import { RoundDetailPage } from '@/features/rounds/RoundDetailPage';
 import { RoundFormPage } from '@/features/rounds/RoundFormPage';
 import { RoundsListPage } from '@/features/rounds/RoundsListPage';
@@ -62,7 +65,15 @@ const AREAS: Area[] = [
   { path: 'dashboard/kpi', resource: 'kpi', title: 'KPI 대시보드', issue: 32 },
   { path: 'join-requests', resource: 'joinRequests', title: '가입신청', issue: 21, list: <JoinRequestsPage />, pages: { history: <JoinHistoryPage /> } },
   { path: 'inquiries', resource: 'inquiries', title: '1:1 문의', issue: 22, list: <InquiriesListPage />, detail: <InquiryDetailPage /> },
-  { path: 'reports', resource: 'reports', title: '신고', issue: 29 },
+  {
+    path: 'reports',
+    resource: 'reports',
+    title: '신고',
+    issue: 29,
+    list: <ReportsListPage />,
+    detail: <ReportDetailPage />,
+    pages: { blocks: <BlocksPage /> },
+  },
   {
     path: 'users',
     resource: 'users',
