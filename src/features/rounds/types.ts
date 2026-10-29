@@ -1,5 +1,4 @@
-export type MeetingStatus =
-  "SCHEDULED" | "IN_PROGRESS" | "COMPLETED" | "CANCELED";
+export type MeetingStatus = 'SCHEDULED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELED';
 
 /** GET /admin/meetings/rounding 행 (BE#59: confirmed_count) */
 export type RoundRow = {
@@ -23,7 +22,7 @@ export type RoundDetail = {
   id: number;
   name: string;
   description: string | null;
-  meeting_type: "ROUND" | "SOCIAL";
+  meeting_type: 'ROUND' | 'SOCIAL';
   meeting_subtype: string | null;
   location: string | null;
   course_name: string | null;
@@ -58,6 +57,7 @@ export type Participant = {
   role: string;
   is_guest: boolean;
   guest_gender?: string | null;
+  guest_birthdate?: string | null;
   guest_handicap?: number | null;
   created_at: string | null;
 };
@@ -85,4 +85,31 @@ export type ScoreRow = {
   participant_id: number;
   user_id: number | null;
   score: number | null;
+};
+
+export type SettlementPerson = {
+  id: number;
+  user_id: number | null;
+  guest_id: number | null;
+  user_name: string;
+  is_guest: boolean;
+  amount: number;
+  amount_paid: number;
+  is_paid: boolean;
+  paid_at: string | null;
+};
+
+/** GET /admin/meetings/{id}/settlement 의 settlement (라운딩) */
+export type Settlement = {
+  id: number;
+  total_cost: number;
+  amount_per_person: number;
+  total_participants: number;
+  notes: string | null;
+  green_fee?: number;
+  caddy_fee?: number;
+  cart_fee?: number;
+  other_fee?: number;
+  other_expense_items?: { title: string; amount: number }[];
+  participants: SettlementPerson[];
 };
