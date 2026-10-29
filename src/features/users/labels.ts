@@ -5,10 +5,6 @@ export const PROVIDER: Record<string, string> = { LOCAL: '이메일', GOOGLE: '�
 
 export const DEVICE: Record<string, string> = { ios: 'iOS', android: 'Android', web: '웹' };
 
-export const CLUB_ROLE: Record<string, string> = { LEADER: '리더', MANAGER: '매니저', MEMBER: '멤버' };
-
-export const CLUB_TYPE: Record<string, string> = { REGULAR: '정기', IRREGULAR: '비정기' };
-
 /** 활동 유형 — 타임라인 칩 라벨 */
 export const EVENT_TYPE: Record<string, string> = {
   SIGNUP: '가입',

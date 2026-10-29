@@ -45,8 +45,9 @@ describe('라우트 가드', () => {
   });
 
   it('조회 권한이 있으면 들어가고, 쓰기 작업은 보이지 않는다', async () => {
-    renderAt('/clubs', meAs('MEETING_ADMIN'));
-    expect(await screen.findByText('클럽 — 준비 중')).toBeInTheDocument();
+    // 아직 이식 전인 영역으로 확인 (조회 권한 = CLUB_ADMIN 의 meetings read)
+    renderAt('/socials', meAs('CLUB_ADMIN'));
+    expect(await screen.findByText('소셜 — 준비 중')).toBeInTheDocument();
   });
 
   it('메뉴는 역할 범위만 보인다', async () => {

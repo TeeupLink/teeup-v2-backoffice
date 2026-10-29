@@ -8,7 +8,7 @@ import { StatusBadge } from '@/components/display/StatusBadge';
 import type { Page } from '@/lib/api/envelope';
 import { formatDate } from '@/lib/format';
 import { fetchUserClubs } from '../api';
-import { CLUB_ROLE, CLUB_TYPE } from '../labels';
+import { CLUB_ROLE, CLUB_TYPE } from '@/features/clubs/labels';
 import type { UserClub } from '../types';
 
 const col = createColumnHelper<UserClub>();

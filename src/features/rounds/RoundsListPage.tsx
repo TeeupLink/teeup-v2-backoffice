@@ -43,13 +43,18 @@ const CONFIG: ListConfig = {
   sortable: ['meeting_time'],
 };
 
+// 클럽 상세 모임 탭: 클럽은 고정이라 클럽 필터·열이 없다
+const CLUB_DEFS = DEFS.filter((d) => d.key !== 'club_id');
+const CLUB_CONFIG: ListConfig = { ...CONFIG, filters: filterKeys(CLUB_DEFS, ['status']) };
+
 const col = createColumnHelper<RoundRow>();
 
-export function RoundsListPage() {
-  const { can } = useAuth();
-  const list = useListState(CONFIG);
+/** 라운딩 목록 표. clubId 를 주면 그 클럽만 (클럽 상세 모임 탭) */
+export function RoundsTable({ clubId }: { clubId?: number }) {
+  const list = useListState(clubId ? CLUB_CONFIG : CONFIG);
   const query = useListQuery<RoundRow>('rounds', ROUNDS_PATH, list.state, {
     mapQuery: mapRoundsQuery,
+    extraQuery: clubId ? { club_id: clubId } : undefined,
   });
 
   const columns = useMemo(
@@ -63,7 +68,7 @@ export function RoundsListPage() {
           </Link>
         ),
       }),
-      col.accessor('club_name', { header: '클럽' }),
+      ...(clubId ? [] : [col.accessor('club_name', { header: '클럽' })]),
       col.accessor('meeting_time', {
         header: '일시',
         meta: { sortKey: 'meeting_time' },
@@ -94,26 +99,13 @@ export function RoundsListPage() {
         cell: (c) => <StatusBadge domain="meeting" value={c.getValue()} />,
       }),
     ],
-    [],
+    [clubId],
   );
 
   return (
     <>
-      <PageHeader
-        title="라운딩"
-        actions={
-          can('meetings', 'write') && (
-            <Link to="/rounds/new">
-              <Button variant="primary">
-                <Plus className="h-4 w-4" aria-hidden />
-                라운딩 등록
-              </Button>
-            </Link>
-          )
-        }
-      />
       <div className="mb-3">
-        <FilterBar list={list} defs={DEFS} searchPlaceholder="모임명·골프장·장소" />
+        <FilterBar list={list} defs={clubId ? CLUB_DEFS : DEFS} searchPlaceholder="모임명·골프장·장소" />
       </div>
       <DataTable
         list={list}
@@ -139,6 +131,28 @@ export function RoundsListPage() {
           />
         }
       />
+    </>
+  );
+}
+
+export function RoundsListPage() {
+  const { can } = useAuth();
+  return (
+    <>
+      <PageHeader
+        title="라운딩"
+        actions={
+          can('meetings', 'write') && (
+            <Link to="/rounds/new">
+              <Button variant="primary">
+                <Plus className="h-4 w-4" aria-hidden />
+                라운딩 등록
+              </Button>
+            </Link>
+          )
+        }
+      />
+      <RoundsTable />
     </>
   );
 }

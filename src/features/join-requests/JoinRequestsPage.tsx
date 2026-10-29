@@ -35,6 +35,9 @@ const DEFS: FilterDef[] = [
   { kind: 'dateRange', key: 'date_from', toKey: 'date_to', label: '신청일' },
 ];
 const CONFIG: ListConfig = { filters: filterKeys(DEFS), defaultSort: '-created_at', sortable: ['created_at'] };
+// 클럽 상세 가입신청 탭: 클럽은 고정이라 클럽 필터·열이 없다
+const CLUB_DEFS = DEFS.filter((d) => d.key !== 'club_id');
+const CLUB_CONFIG: ListConfig = { ...CONFIG, filters: filterKeys(CLUB_DEFS) };
 
 const rejectConfirm = (count: number): ConfirmOptions => ({
   title: count > 1 ? `${count}건을 거절할까요?` : '가입신청을 거절할까요?',
@@ -46,12 +49,13 @@ const rejectConfirm = (count: number): ConfirmOptions => ({
 
 const col = createColumnHelper<JoinRequestRow>();
 
-export function JoinRequestsPage() {
+/** 가입 대기 목록 + 승인·거절. clubId 를 주면 그 클럽만 (클럽 상세 탭) */
+export function JoinRequestsTable({ clubId }: { clubId?: number }) {
   const { can } = useAuth();
   const pii = usePII();
   const qc = useQueryClient();
-  const list = useListState(CONFIG);
-  const query = useListQuery<JoinRequestRow>('join-requests', JOIN_REQUESTS_PATH, list.state);
+  const list = useListState(clubId ? CLUB_CONFIG : CONFIG);
+  const query = useListQuery<JoinRequestRow>('join-requests', JOIN_REQUESTS_PATH, list.state, { extraQuery: clubId ? { club_id: clubId } : undefined });
   const canSeeUser = can('users');
 
   const single = useMutation({
@@ -87,15 +91,19 @@ export function JoinRequestsPage() {
           );
         },
       }),
-      col.display({
-        id: 'club',
-        header: '클럽',
-        cell: ({ row: { original: r } }) => (
-          <Link to={`/clubs/${r.club.id}`} className="text-slate-700 hover:underline">
-            {r.club.name}
-          </Link>
-        ),
-      }),
+      ...(clubId
+        ? []
+        : [
+            col.display({
+              id: 'club',
+              header: '클럽',
+              cell: ({ row: { original: r } }) => (
+                <Link to={`/clubs/${r.club.id}`} className="text-slate-700 hover:underline">
+                  {r.club.name}
+                </Link>
+              ),
+            }),
+          ]),
       col.accessor('created_at', { header: '신청일', meta: { sortKey: 'created_at' }, cell: (c) => formatDateTime(c.getValue()) }),
       col.display({
         id: 'actions',
@@ -119,7 +127,7 @@ export function JoinRequestsPage() {
         },
       }),
     ],
-    [pii, canSeeUser, single],
+    [pii, canSeeUser, single, clubId],
   );
 
   const bulkActions: BulkAction[] = [
@@ -130,10 +138,8 @@ export function JoinRequestsPage() {
 
   return (
     <>
-      <PageHeader title="가입신청" description="전체 클럽의 가입 대기 신청입니다. 여러 건을 선택해 한 번에 처리할 수 있습니다." />
-      <RouteTabs tabs={JOIN_TABS} label="가입신청 탭" />
       <div className="mb-3">
-        <FilterBar list={list} defs={DEFS} searchPlaceholder="신청자 닉네임·실명" />
+        <FilterBar list={list} defs={clubId ? CLUB_DEFS : DEFS} searchPlaceholder="신청자 닉네임·실명" />
       </div>
       <DataTable
         list={list}
@@ -143,6 +149,16 @@ export function JoinRequestsPage() {
         bulkActions={bulkActions}
         empty={{ title: '처리할 가입신청이 없습니다' }}
       />
+    </>
+  );
+}
+
+export function JoinRequestsPage() {
+  return (
+    <>
+      <PageHeader title="가입신청" description="전체 클럽의 가입 대기 신청입니다. 여러 건을 선택해 한 번에 처리할 수 있습니다." />
+      <RouteTabs tabs={JOIN_TABS} label="가입신청 탭" />
+      <JoinRequestsTable />
     </>
   );
 }

@@ -2,6 +2,8 @@ import type { ReactElement } from 'react';
 import { createBrowserRouter, Navigate, Outlet, type RouteObject } from 'react-router';
 import { AuditLogsPage } from '@/features/audit-logs/AuditLogsPage';
 import { AuditMonthlyPage } from '@/features/audit-logs/AuditMonthlyPage';
+import { ClubDetailPage } from '@/features/clubs/ClubDetailPage';
+import { ClubsListPage } from '@/features/clubs/ClubsListPage';
 import { DashboardPage } from '@/features/dashboard/DashboardPage';
 import { LoginPage } from '@/features/auth/LoginPage';
 import { RoundDetailPage } from '@/features/rounds/RoundDetailPage';
@@ -56,7 +58,7 @@ const AREAS: Area[] = [
     detail: <UserDetailPage />,
     forms: { new: <UserFormPage />, ':id/edit': <UserFormPage /> },
   },
-  { path: 'clubs', resource: 'clubs', writePaths: ['new', ':id/edit'], title: '클럽', issue: 24 },
+  { path: 'clubs', resource: 'clubs', writePaths: ['new', ':id/edit'], title: '클럽', issue: 24, list: <ClubsListPage />, detail: <ClubDetailPage /> },
   { path: 'rounds', resource: 'meetings', writePaths: ['new', ':id/edit'], title: '라운딩', issue: 23, list: <RoundsListPage />, detail: <RoundDetailPage />, forms: { new: <RoundFormPage />, ':id/edit': <RoundFormPage /> } },
   { path: 'socials', resource: 'meetings', writePaths: ['new', ':id/edit'], title: '소셜', issue: 25 },
   { path: 'notices', resource: 'content', title: '공지', issue: 26 },
