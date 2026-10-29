@@ -31,6 +31,9 @@ import { NoticeDetailPage } from '@/features/notices/NoticeDetailPage';
 import { NoticeFormPage as SystemNoticeFormPage } from '@/features/notices/NoticeFormPage';
 import { NoticesListPage } from '@/features/notices/NoticesListPage';
 import { ProfilePage } from '@/features/profile/ProfilePage';
+import { TermsFormPage } from '@/features/terms/TermsFormPage';
+import { TermsPage } from '@/features/terms/TermsPage';
+import { TermsTypePage } from '@/features/terms/TermsTypePage';
 import { UserDetailPage } from '@/features/users/UserDetailPage';
 import { UserFormPage } from '@/features/users/UserFormPage';
 import { UsersListPage } from '@/features/users/UsersListPage';
@@ -140,7 +143,16 @@ const AREAS: Area[] = [
     list: <FaqListPage />,
     forms: { new: <FaqFormPage />, ':id/edit': <FaqFormPage /> },
   },
-  { path: 'terms', resource: 'content', title: '약관', issue: 30 },
+  {
+    path: 'terms',
+    resource: 'content',
+    writePaths: ['new', 'edit/:vid'],
+    title: '약관',
+    issue: 30,
+    list: <TermsPage />,
+    detail: <TermsTypePage />,
+    forms: { new: <TermsFormPage />, 'edit/:vid': <TermsFormPage /> },
+  },
   { path: 'payments', resource: 'payments', title: '결제 내역', issue: 31 },
   { path: 'subscriptions', resource: 'payments', title: '구독', issue: 31 },
   { path: 'plans', resource: 'payments', title: '요금제', issue: 31 },
