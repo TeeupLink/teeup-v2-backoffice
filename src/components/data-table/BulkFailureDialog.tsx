@@ -2,7 +2,16 @@ import { Modal } from '@/components/dialog/Modal';
 import { Button } from '@/components/ui/Button';
 import type { BulkResult } from './bulk';
 
-export function BulkFailureDialog({ failures, onClose }: { failures: BulkResult['failed'] | null; onClose: () => void }) {
+/** label: 행 id 대신 보여 줄 이름 (예: 참가자 닉네임) */
+export function BulkFailureDialog({
+  failures,
+  onClose,
+  label = (id) => `#${String(id)}`,
+}: {
+  failures: BulkResult['failed'] | null;
+  onClose: () => void;
+  label?: (id: BulkResult['failed'][number]['id']) => string;
+}) {
   return (
     <Modal
       open={!!failures}
@@ -14,7 +23,7 @@ export function BulkFailureDialog({ failures, onClose }: { failures: BulkResult[
       <ul className="divide-y divide-slate-100 text-sm">
         {failures?.map((f) => (
           <li key={String(f.id)} className="flex gap-3 py-2">
-            <span className="shrink-0 font-medium tabular text-slate-900">#{String(f.id)}</span>
+            <span className="shrink-0 font-medium tabular text-slate-900">{label(f.id)}</span>
             <span className="text-slate-600">{f.message}</span>
           </li>
         ))}

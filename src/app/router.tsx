@@ -4,6 +4,8 @@ import { AuditLogsPage } from '@/features/audit-logs/AuditLogsPage';
 import { AuditMonthlyPage } from '@/features/audit-logs/AuditMonthlyPage';
 import { DashboardPage } from '@/features/dashboard/DashboardPage';
 import { LoginPage } from '@/features/auth/LoginPage';
+import { RoundDetailPage } from '@/features/rounds/RoundDetailPage';
+import { RoundsListPage } from '@/features/rounds/RoundsListPage';
 import { InquiriesListPage } from '@/features/inquiries/InquiriesListPage';
 import { InquiryDetailPage } from '@/features/inquiries/InquiryDetailPage';
 import { JoinHistoryPage } from '@/features/join-requests/JoinHistoryPage';
@@ -54,7 +56,7 @@ const AREAS: Area[] = [
     forms: { new: <UserFormPage />, ':id/edit': <UserFormPage /> },
   },
   { path: 'clubs', resource: 'clubs', writePaths: ['new', ':id/edit'], title: '클럽', issue: 24 },
-  { path: 'rounds', resource: 'meetings', writePaths: ['new', ':id/edit'], title: '라운딩', issue: 23 },
+  { path: 'rounds', resource: 'meetings', writePaths: ['new', ':id/edit'], title: '라운딩', issue: 23, list: <RoundsListPage />, detail: <RoundDetailPage /> },
   { path: 'socials', resource: 'meetings', writePaths: ['new', ':id/edit'], title: '소셜', issue: 25 },
   { path: 'notices', resource: 'content', title: '공지', issue: 26 },
   { path: 'faq', resource: 'content', title: 'FAQ', issue: 26 },
