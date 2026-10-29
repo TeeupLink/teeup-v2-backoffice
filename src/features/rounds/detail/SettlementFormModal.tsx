@@ -8,7 +8,7 @@ import { TextInput, Textarea } from '@/components/form/controls';
 import { Button } from '@/components/ui/Button';
 import { formatWon } from '@/lib/format';
 import type { SettlementInput } from '../api';
-import { formatMoneyInput } from '../roundForm';
+import { formatMoneyInput } from '@/lib/format';
 
 const amount = z.string().regex(/^\d*$/);
 const schema = z.object({

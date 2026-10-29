@@ -152,5 +152,3 @@ export function toRoundBody(v: RoundValues, dirty?: Partial<Record<keyof RoundVa
   return out;
 }
 
-/** 금액 입력 표시 (천 단위 콤마) */
-export const formatMoneyInput = (digitsOnly: string) => (digitsOnly ? Number(digitsOnly).toLocaleString('ko-KR') : '');

@@ -60,3 +60,20 @@ export type ClubMember = {
 };
 
 export type Region = { code: string; name: string };
+
+export type ClubNotice = {
+  id: number;
+  title: string;
+  content: string;
+  is_important: boolean;
+  is_private: boolean;
+  author_name: string;
+  view_count: number;
+  created_at: string | null;
+};
+
+export type Regulation = { id: number; title: string; content: string; status: string; category_id?: number; created_at: string | null };
+export type RegulationCategory = { id: number; name: string; order: number; regulations: Regulation[] };
+
+export type BillingCycle = 'MONTHLY' | 'QUARTERLY' | 'YEARLY' | 'ONE_TIME';
+export type ClubFee = { id: number; name: string; amount: number; cycle: BillingCycle | null; description: string | null; is_active: boolean; created_at: string | null };

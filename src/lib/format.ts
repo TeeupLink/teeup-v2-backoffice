@@ -32,3 +32,6 @@ export function elapsedHours(v: string | Date | null | undefined, now = new Date
   const d = parse(v);
   return d ? (now.getTime() - d.getTime()) / 3_600_000 : null;
 }
+
+/** 금액 입력칸 표시 (숫자만 든 문자열 → 천 단위 콤마) */
+export const formatMoneyInput = (digitsOnly: string) => (digitsOnly ? Number(digitsOnly).toLocaleString('ko-KR') : '');

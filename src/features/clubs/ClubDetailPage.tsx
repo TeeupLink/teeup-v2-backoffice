@@ -16,12 +16,15 @@ import { RoundsTable } from '@/features/rounds/RoundsListPage';
 import { api } from '@/lib/api/client';
 import { ApiError, errorMessage } from '@/lib/api/errors';
 import { deleteClub, fetchClub, setClubStatus } from './api';
+import { FeesTab } from './detail/FeesTab';
 import { MembersTab } from './detail/MembersTab';
+import { NoticesTab } from './detail/NoticesTab';
 import { OverviewTab } from './detail/OverviewTab';
+import { RegulationsTab } from './detail/RegulationsTab';
 import { CLUB_TYPE } from './labels';
 import type { ClubDetail } from './types';
 
-// SCR-042 클럽 상세 (화면설계서 4.5, F-043). 공지·규정·회비 탭은 이어서 붙인다.
+// SCR-042 클럽 상세 (화면설계서 4.5, F-043~047)
 
 function Actions({ club }: { club: ClubDetail }) {
   const qc = useQueryClient();
@@ -138,6 +141,9 @@ export function ClubDetailPage() {
           { to: base, label: '개요', end: true },
           { to: `${base}/members`, label: '멤버', count: c.current_member_count },
           { to: `${base}/join-requests`, label: '가입신청', count: c.pending_count || null },
+          { to: `${base}/notices`, label: '공지' },
+          { to: `${base}/regulations`, label: '규정' },
+          { to: `${base}/fees`, label: '회비' },
           { to: `${base}/meetings`, label: '모임' },
         ]}
       />
@@ -145,6 +151,9 @@ export function ClubDetailPage() {
         <Route index element={<OverviewTab club={c} />} />
         <Route path="members" element={<MembersTab club={c} writable={writable && !deleted} />} />
         <Route path="join-requests" element={can('joinRequests') ? <JoinRequestsTable clubId={id} /> : <NotFoundPage />} />
+        <Route path="notices" element={<NoticesTab clubId={id} writable={writable && !deleted} />} />
+        <Route path="regulations" element={<RegulationsTab clubId={id} writable={writable && !deleted} />} />
+        <Route path="fees" element={<FeesTab clubId={id} writable={writable && !deleted} />} />
         <Route path="meetings" element={can('meetings') ? <RoundsTable clubId={id} /> : <NotFoundPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>

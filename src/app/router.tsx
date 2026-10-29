@@ -3,6 +3,9 @@ import { createBrowserRouter, Navigate, Outlet, type RouteObject } from 'react-r
 import { AuditLogsPage } from '@/features/audit-logs/AuditLogsPage';
 import { AuditMonthlyPage } from '@/features/audit-logs/AuditMonthlyPage';
 import { ClubDetailPage } from '@/features/clubs/ClubDetailPage';
+import { ClubFormPage } from '@/features/clubs/ClubFormPage';
+import { NoticeFormPage } from '@/features/clubs/content/NoticeFormPage';
+import { RegulationFormPage } from '@/features/clubs/content/RegulationFormPage';
 import { ClubsListPage } from '@/features/clubs/ClubsListPage';
 import { DashboardPage } from '@/features/dashboard/DashboardPage';
 import { LoginPage } from '@/features/auth/LoginPage';
@@ -58,7 +61,23 @@ const AREAS: Area[] = [
     detail: <UserDetailPage />,
     forms: { new: <UserFormPage />, ':id/edit': <UserFormPage /> },
   },
-  { path: 'clubs', resource: 'clubs', writePaths: ['new', ':id/edit'], title: '클럽', issue: 24, list: <ClubsListPage />, detail: <ClubDetailPage /> },
+  {
+    path: 'clubs',
+    resource: 'clubs',
+    writePaths: ['new', ':id/edit', ':id/notices/new', ':id/notices/:nid/edit', ':id/regulations/new', ':id/regulations/:rid/edit'],
+    title: '클럽',
+    issue: 24,
+    list: <ClubsListPage />,
+    detail: <ClubDetailPage />,
+    forms: {
+      new: <ClubFormPage />,
+      ':id/edit': <ClubFormPage />,
+      ':id/notices/new': <NoticeFormPage />,
+      ':id/notices/:nid/edit': <NoticeFormPage />,
+      ':id/regulations/new': <RegulationFormPage />,
+      ':id/regulations/:rid/edit': <RegulationFormPage />,
+    },
+  },
   { path: 'rounds', resource: 'meetings', writePaths: ['new', ':id/edit'], title: '라운딩', issue: 23, list: <RoundsListPage />, detail: <RoundDetailPage />, forms: { new: <RoundFormPage />, ':id/edit': <RoundFormPage /> } },
   { path: 'socials', resource: 'meetings', writePaths: ['new', ':id/edit'], title: '소셜', issue: 25 },
   { path: 'notices', resource: 'content', title: '공지', issue: 26 },

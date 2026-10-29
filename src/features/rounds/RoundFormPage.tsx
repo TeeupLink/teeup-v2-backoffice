@@ -16,11 +16,12 @@ import { PageHeader } from '@/components/layout/PageHeader';
 import { Button } from '@/components/ui/Button';
 import { api } from '@/lib/api/client';
 import { ApiError } from '@/lib/api/errors';
+import { formatMoneyInput } from '@/lib/format';
 import { toOptions } from '@/lib/labels';
 import { fetchParticipants, fetchRound } from './api';
 import { ParticipantsSection } from './form/ParticipantsSection';
 import { FORMATION_MODE, SETTLEMENT_METHOD, SUBTYPE } from './labels';
-import { formatMoneyInput, ROUND_FIELDS, roundSchema, toRoundBody, toRoundValues, type RoundValues } from './roundForm';
+import { ROUND_FIELDS, roundSchema, toRoundBody, toRoundValues, type RoundValues } from './roundForm';
 import type { Participant, RoundDetail } from './types';
 
 // SCR-051 라운딩 등록·수정 (화면설계서 4.6, F-051)

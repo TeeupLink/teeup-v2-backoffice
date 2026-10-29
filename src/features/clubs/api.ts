@@ -1,5 +1,5 @@
 import { api } from '@/lib/api/client';
-import type { ClubDetail, ClubMember, ClubStatus, Region } from './types';
+import type { BillingCycle, ClubDetail, ClubFee, ClubMember, ClubNotice, ClubStatus, Region, Regulation, RegulationCategory } from './types';
 
 export const CLUBS_PATH = '/admin/clubs';
 
@@ -21,3 +21,31 @@ export const removeMember = (id: number, userId: number, reason: string) => api(
 
 export const fetchSidoList = () => api<Region[]>('/sido-list');
 export const fetchGunguList = (sido: string) => api<Region[]>('/gungu-list', { query: { sido_code: sido } });
+
+export const createClub = (body: Record<string, unknown>) => api<{ id: number }>(CLUBS_PATH, { method: 'POST', body });
+export const updateClub = (id: number, body: Record<string, unknown>) => api(`${CLUBS_PATH}/${id}`, { method: 'PUT', body });
+
+export const noticesPath = (id: number) => `${CLUBS_PATH}/${id}/notices`;
+export const fetchNotice = (id: number, nid: number) => api<ClubNotice>(`${noticesPath(id)}/${nid}`);
+export type NoticeInput = { title: string; content: string; is_important: boolean; is_private: boolean };
+export const saveNotice = (id: number, nid: number | null, body: NoticeInput) =>
+  nid ? api(`${noticesPath(id)}/${nid}`, { method: 'PUT', body }) : api(noticesPath(id), { method: 'POST', body });
+export const deleteNotice = (id: number, nid: number) => api(`${noticesPath(id)}/${nid}`, { method: 'DELETE' });
+
+const reg = (id: number) => `${CLUBS_PATH}/${id}/regulations`;
+export const regulationsKey = (id: number) => ['club', id, 'regulations'] as const;
+export const fetchRegulations = (id: number) => api<{ categories: RegulationCategory[] }>(reg(id)).then((r) => r.categories);
+export const fetchRegulation = (id: number, rid: number) => api<Regulation & { category_id: number }>(`${reg(id)}/${rid}`);
+export type RegulationInput = { category_id: number; title: string; content: string };
+export const saveRegulation = (id: number, rid: number | null, body: RegulationInput) =>
+  rid ? api(`${reg(id)}/${rid}`, { method: 'PUT', body }) : api(reg(id), { method: 'POST', body });
+export const deleteRegulation = (id: number, rid: number) => api(`${reg(id)}/${rid}`, { method: 'DELETE' });
+export const createCategory = (id: number, name: string) => api(`${reg(id)}/categories`, { method: 'POST', body: { name } });
+export const renameCategory = (id: number, cid: number, name: string) => api(`${reg(id)}/categories/${cid}`, { method: 'PUT', body: { name } });
+export const deleteCategory = (id: number, cid: number) => api(`${reg(id)}/categories/${cid}`, { method: 'DELETE' });
+
+export const fetchFees = (id: number) => api<ClubFee[]>(`${CLUBS_PATH}/${id}/fees`);
+export type FeeInput = { name: string; amount: number; cycle: BillingCycle; description: string; is_active: boolean };
+export const saveFee = (id: number, fid: number | null, body: FeeInput) =>
+  fid ? api(`${CLUBS_PATH}/${id}/fees/${fid}`, { method: 'PUT', body }) : api(`${CLUBS_PATH}/${id}/fees`, { method: 'POST', body });
+export const deleteFee = (id: number, fid: number) => api(`${CLUBS_PATH}/${id}/fees/${fid}`, { method: 'DELETE' });

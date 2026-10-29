@@ -14,3 +14,12 @@ if (!Element.prototype.hasPointerCapture) {
   Element.prototype.releasePointerCapture = () => {};
 }
 if (!Element.prototype.scrollIntoView) Element.prototype.scrollIntoView = () => {};
+
+// jsdom 에 없는 ResizeObserver — Radix Switch(크기 측정)가 쓴다
+if (!('ResizeObserver' in globalThis)) {
+  globalThis.ResizeObserver = class {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  } as unknown as typeof ResizeObserver;
+}
