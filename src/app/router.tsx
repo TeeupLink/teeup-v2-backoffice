@@ -8,6 +8,8 @@ import { NoticeFormPage } from '@/features/clubs/content/NoticeFormPage';
 import { RegulationFormPage } from '@/features/clubs/content/RegulationFormPage';
 import { ClubsListPage } from '@/features/clubs/ClubsListPage';
 import { DashboardPage } from '@/features/dashboard/DashboardPage';
+import { FaqFormPage } from '@/features/faq/FaqFormPage';
+import { FaqListPage } from '@/features/faq/FaqListPage';
 import { LoginPage } from '@/features/auth/LoginPage';
 import { RoundDetailPage } from '@/features/rounds/RoundDetailPage';
 import { RoundFormPage } from '@/features/rounds/RoundFormPage';
@@ -19,6 +21,9 @@ import { InquiriesListPage } from '@/features/inquiries/InquiriesListPage';
 import { InquiryDetailPage } from '@/features/inquiries/InquiryDetailPage';
 import { JoinHistoryPage } from '@/features/join-requests/JoinHistoryPage';
 import { JoinRequestsPage } from '@/features/join-requests/JoinRequestsPage';
+import { NoticeDetailPage } from '@/features/notices/NoticeDetailPage';
+import { NoticeFormPage as SystemNoticeFormPage } from '@/features/notices/NoticeFormPage';
+import { NoticesListPage } from '@/features/notices/NoticesListPage';
 import { UserDetailPage } from '@/features/users/UserDetailPage';
 import { UserFormPage } from '@/features/users/UserFormPage';
 import { UsersListPage } from '@/features/users/UsersListPage';
@@ -101,8 +106,25 @@ const AREAS: Area[] = [
     detail: <SocialDetailPage />,
     forms: { new: <SocialFormPage />, ':id/edit': <SocialFormPage /> },
   },
-  { path: 'notices', resource: 'content', title: '공지', issue: 26 },
-  { path: 'faq', resource: 'content', title: 'FAQ', issue: 26 },
+  {
+    path: 'notices',
+    resource: 'content',
+    writePaths: ['new', ':id/edit'],
+    title: '공지',
+    issue: 26,
+    list: <NoticesListPage />,
+    detail: <NoticeDetailPage />,
+    forms: { new: <SystemNoticeFormPage />, ':id/edit': <SystemNoticeFormPage /> },
+  },
+  {
+    path: 'faq',
+    resource: 'content',
+    writePaths: ['new', ':id/edit'],
+    title: 'FAQ',
+    issue: 26,
+    list: <FaqListPage />,
+    forms: { new: <FaqFormPage />, ':id/edit': <FaqFormPage /> },
+  },
   { path: 'terms', resource: 'content', title: '약관', issue: 30 },
   { path: 'payments', resource: 'payments', title: '결제 내역', issue: 31 },
   { path: 'subscriptions', resource: 'payments', title: '구독', issue: 31 },

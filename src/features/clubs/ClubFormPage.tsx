@@ -41,7 +41,8 @@ function ClubForm({ club }: { club?: ClubDetail }) {
   const gunguList = useQuery({ queryKey: ['gungu-list', sidoCode], queryFn: () => fetchGunguList(sidoCode), enabled: !!sidoCode, staleTime: Infinity });
 
   const save = useMutation({
-    mutationFn: (v: ClubValues) => (editing ? updateClub(club.id, toClubBody(v, dirtyFields)).then(() => club.id) : createClub(toClubBody(v)).then((r) => r.id)),
+    mutationFn: (v: ClubValues) =>
+      editing ? updateClub(club.id, toClubBody(v, dirtyFields)).then(() => club.id) : createClub(toClubBody(v)).then((r) => r.id),
     onSuccess: async (id, v) => {
       reset(v);
       await qc.invalidateQueries({ queryKey: ['clubs'] });
@@ -99,13 +100,19 @@ function ClubForm({ club }: { club?: ClubDetail }) {
                 placeholder="선택"
                 options={(sido.data ?? []).map((r) => ({ value: r.code, label: r.name }))}
                 {...register('sido_code', { onChange: () => setValue('gungu_codes', [], { shouldDirty: true }) })}
+                // 시도 목록이 늦게 와도 수정 화면에서 저장된 값이 보이도록 화면 값을 폼 값에 묶는다
+                value={sidoCode}
               />
             )}
           </FormField>
           <FormField label="군구" required error={errors.gungu_codes?.message} hint={`${gungu.length}/4 선택`}>
             {() =>
               sidoCode ? (
-                <div className="grid max-h-56 grid-cols-2 gap-x-4 gap-y-1.5 overflow-y-auto rounded-lg border border-slate-200 p-3 sm:grid-cols-3" role="group" aria-label="군구">
+                <div
+                  className="grid max-h-56 grid-cols-2 gap-x-4 gap-y-1.5 overflow-y-auto rounded-lg border border-slate-200 p-3 sm:grid-cols-3"
+                  role="group"
+                  aria-label="군구"
+                >
                   {(gunguList.data ?? []).map((g) => (
                     <Checkbox
                       key={g.code}
@@ -135,7 +142,13 @@ function ClubForm({ club }: { club?: ClubDetail }) {
                     control={control}
                     name="representative_id"
                     render={({ field }) => (
-                      <LookupSelect id={p.id} invalid={p['aria-invalid']} kind="users" value={field.value || undefined} onChange={(v) => field.onChange(v ?? '')} />
+                      <LookupSelect
+                        id={p.id}
+                        invalid={p['aria-invalid']}
+                        kind="users"
+                        value={field.value || undefined}
+                        onChange={(v) => field.onChange(v ?? '')}
+                      />
                     )}
                   />
                 )}

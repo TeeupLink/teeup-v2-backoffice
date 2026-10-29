@@ -98,19 +98,40 @@ describe('SCR-042 공지·규정·회비 탭', () => {
     const user = userEvent.setup();
     const { calls } = renderApp('/clubs/3/notices', 'CLUB_ADMIN', {
       ...base,
-      'GET /admin/clubs/3/notices': { data: [{ id: 1, title: '11월 정기 라운딩', content: '', is_important: true, is_private: false, author_name: '김리더', view_count: 12, created_at: null }], total: 1 },
+      'GET /admin/clubs/3/notices': {
+        data: [
+          { id: 1, title: '11월 정기 라운딩', content: '', is_important: true, is_private: false, author_name: '김리더', view_count: 12, created_at: null },
+        ],
+        total: 1,
+      },
     });
     expect(await screen.findByText('11월 정기 라운딩')).toBeInTheDocument();
     expect(screen.getByLabelText('중요')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /공지 작성/ })).toHaveAttribute('href', '/clubs/3/notices/new');
     await user.type(screen.getByRole('searchbox'), '회비{Enter}');
-    await waitFor(() => expect(calls.filter((c) => c.path === '/admin/clubs/3/notices').pop()!.query.get('q')).toBe('회비'));
+    await waitFor(() =>
+      expect(
+        calls
+          .filter((c) => c.path === '/admin/clubs/3/notices')
+          .pop()!
+          .query.get('q'),
+      ).toBe('회비'),
+    );
   });
 
   it('공지 수정: 제목만 바꿔 저장하면 공지 탭으로 돌아간다', async () => {
     const user = userEvent.setup();
     const { calls, router } = renderApp('/clubs/3/notices/1/edit', 'CLUB_ADMIN', {
-      'GET /admin/clubs/3/notices/1': { id: 1, title: '11월 정기 라운딩', content: '<p>장소 공지</p>', is_important: false, is_private: false, author_name: 'x', view_count: 0, created_at: null },
+      'GET /admin/clubs/3/notices/1': {
+        id: 1,
+        title: '11월 정기 라운딩',
+        content: '<p>장소 공지</p>',
+        is_important: false,
+        is_private: false,
+        author_name: 'x',
+        view_count: 0,
+        created_at: null,
+      },
       'PUT /admin/clubs/3/notices/1': {},
       ...base,
       'GET /admin/clubs/3/notices': { data: [], total: 0 },
@@ -120,16 +141,26 @@ describe('SCR-042 공지·규정·회비 탭', () => {
     await user.type(title, '11월 정기 라운딩 (장소 변경)');
     await user.click(screen.getByRole('button', { name: '저장' }));
     await waitFor(() => expect(router.state.location.pathname).toBe('/clubs/3/notices'));
-    expect(calls.find((c) => c.method === 'PUT')!.body).toEqual({ title: '11월 정기 라운딩 (장소 변경)', content: '<p>장소 공지</p>', is_important: false, is_private: false });
+    expect(calls.find((c) => c.method === 'PUT')!.body).toEqual({
+      title: '11월 정기 라운딩 (장소 변경)',
+      content: '<p>장소 공지</p>',
+      is_important: false,
+      is_private: false,
+    });
   });
 
   it('규정: 카테고리 추가, 규정이 남은 카테고리 삭제는 서버 사유를 보여 준다', async () => {
     const user = userEvent.setup();
     const { calls } = renderApp('/clubs/3/regulations', 'CLUB_ADMIN', {
       ...base,
-      'GET /admin/clubs/3/regulations': { categories: [{ id: 1, name: '회칙', order: 1, regulations: [{ id: 5, title: '제1조 목적', content: '<p>친목</p>', status: 'ACTIVE', created_at: null }] }] },
+      'GET /admin/clubs/3/regulations': {
+        categories: [
+          { id: 1, name: '회칙', order: 1, regulations: [{ id: 5, title: '제1조 목적', content: '<p>친목</p>', status: 'ACTIVE', created_at: null }] },
+        ],
+      },
       'POST /admin/clubs/3/regulations/categories': {},
-      'DELETE /admin/clubs/3/regulations/categories/1': () => Response.json({ detail: '이 카테고리에 규정이 1개 있습니다. 규정을 먼저 옮기거나 삭제해주세요.' }, { status: 409 }),
+      'DELETE /admin/clubs/3/regulations/categories/1': () =>
+        Response.json({ detail: '이 카테고리에 규정이 1개 있습니다. 규정을 먼저 옮기거나 삭제해주세요.' }, { status: 409 }),
     });
     await user.click(await screen.findByRole('button', { name: '제1조 목적' }));
     expect(screen.getByText('친목')).toBeInTheDocument();
@@ -153,11 +184,20 @@ describe('SCR-042 공지·규정·회비 탭', () => {
     expect(within(dialog).getByLabelText(/금액/)).toHaveValue('120,000');
     await user.selectOptions(within(dialog).getByLabelText('주기'), 'YEARLY');
     await user.click(within(dialog).getByRole('button', { name: '저장' }));
-    await waitFor(() => expect(calls.find((c) => c.method === 'POST')?.body).toEqual({ name: '연회비', amount: 120000, cycle: 'YEARLY', description: '', is_active: true }));
+    await waitFor(() =>
+      expect(calls.find((c) => c.method === 'POST')?.body).toEqual({ name: '연회비', amount: 120000, cycle: 'YEARLY', description: '', is_active: true }),
+    );
   });
 
   it('조회 전용 역할은 작성 화면에 들어올 수 없다', async () => {
     renderApp('/clubs/3/notices/new', 'MEETING_ADMIN', base);
     expect(await screen.findByText('이 화면에 접근할 권한이 없습니다')).toBeInTheDocument();
+  });
+});
+
+describe('SCR-041 클럽 수정', () => {
+  it('시도 목록이 늦게 와도 저장된 시도가 선택돼 보인다', async () => {
+    renderApp('/clubs/3/edit', 'CLUB_ADMIN', { ...regions, 'GET /admin/clubs/3': club });
+    await waitFor(() => expect(screen.getByLabelText(/시도/)).toHaveValue('11'));
   });
 });
