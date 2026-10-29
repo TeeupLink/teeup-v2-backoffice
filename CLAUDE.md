@@ -10,7 +10,7 @@
 ## Project Context
 
 - 프로젝트 개요와 목표는 `PRD.md`에 정의되어 있습니다. 산출물·코드 작업 전에 반드시 먼저 읽습니다
-- 진행 상태는 `.progress.md`, 일정은 GitHub Project **backoffice-renew** (teeup-kr/projects/3) 로드맵에서 관리합니다
+- 진행 상태는 `.progress.md`, 일정은 GitHub Project **backoffice-renew** (TeeupLink/projects/3) 로드맵에서 관리합니다. GitHub 조직명은 2026-10-29 `teeup-kr` 에서 `TeeupLink` 로 바뀌었습니다
 - 프롬프트 라이브러리는 `prompts/` 폴더를 참조합니다 (프레임워크에서 이식)
 
 ### 도메인 컨텍스트: 티업링크(teeup) 백오피스
@@ -173,9 +173,9 @@ graph TD
 
 | 저장소 | 역할 |
 |--------|------|
-| `teeup-kr/teeup-v2-backoffice` (이 저장소) | 백오피스 SPA + 프로젝트 문서 전체 |
-| `teeup-kr/teeup-v2-backend` | FastAPI + MySQL. **모든 비즈니스 로직과 권한 검증** |
-| `teeup-kr/teeup-v2-reactnative` | 사용자 앱. **이 프로젝트에서 수정하지 않음** |
+| `TeeupLink/teeup-v2-backoffice` (이 저장소) | 백오피스 SPA + 프로젝트 문서 전체 |
+| `TeeupLink/teeup-v2-backend` | FastAPI + MySQL. **모든 비즈니스 로직과 권한 검증** |
+| `TeeupLink/teeup-v2-reactnative` | 사용자 앱. **이 프로젝트에서 수정하지 않음** |
 
 ```
 teeup-v2-backoffice/

@@ -9,10 +9,10 @@
 | 항목        | 내용 |
 | ----------- | ---- |
 | 프로젝트명  | 티업링크(teeup) 백오피스 재구축 |
-| 고객사/조직 | teeup-kr (내부) |
+| 고객사/조직 | TeeupLink (내부) |
 | 팀 규모     | PM/개발 1 + Claude Code |
 | 기간        | 2026-10-28 ~ 2026-11-24 (약 4주, 최대한 빠르게) |
-| 일정 관리   | GitHub Project [backoffice-renew](https://github.com/orgs/teeup-kr/projects/3) |
+| 일정 관리   | GitHub Project [backoffice-renew](https://github.com/orgs/TeeupLink/projects/3) |
 | 기술 스택   | **React + Vite + TypeScript + Tailwind CSS / FastAPI + MySQL (별도 저장소) / 자체 JWT / Docker + nginx** |
 
 ## 프로젝트 목표
@@ -119,7 +119,7 @@ teeup-v2-backoffice/
 └── PRD.md                       # 현재 파일
 ```
 
-관련 저장소: `teeup-kr/teeup-v2-backend` (API·로그·빌링), `teeup-kr/teeup-v2-reactnative` (수정 안 함)
+관련 저장소: `TeeupLink/teeup-v2-backend` (API·로그·빌링), `TeeupLink/teeup-v2-reactnative` (수정 안 함)
 
 ## 마일스톤
 
