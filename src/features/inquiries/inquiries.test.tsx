@@ -14,7 +14,7 @@ describe('SCR-021 문의 목록', () => {
   it('기본 탭은 미답변 — PENDING·SUBMITTED 로 조회', async () => {
     const { calls } = renderApp('/inquiries', 'SUPPORT_ADMIN', { 'GET /admin/inquiries': { items: [row], total: 1, page: 1, size: 20 } });
     expect(await screen.findByText('로그인이 안 돼요')).toBeInTheDocument();
-    expect(calls[0]!.query.getAll('status')).toEqual(['PENDING', 'SUBMITTED']);
+    expect(calls.find((c) => c.path === '/admin/inquiries')!.query.getAll('status')).toEqual(['PENDING', 'SUBMITTED']);
     expect(screen.getByRole('tab', { name: '미답변' })).toHaveAttribute('aria-selected', 'true');
   });
 
@@ -23,7 +23,7 @@ describe('SCR-021 문의 목록', () => {
     const { calls } = renderApp('/inquiries', 'SUPPORT_ADMIN', { 'GET /admin/inquiries': { items: [row], total: 1, page: 1, size: 20 } });
     await screen.findByText('로그인이 안 돼요');
     await user.click(screen.getByRole('tab', { name: '전체' }));
-    await waitFor(() => expect(calls[calls.length - 1]!.query.has('status')).toBe(false));
+    await waitFor(() => expect(calls.filter((c) => c.path === '/admin/inquiries').pop()!.query.has('status')).toBe(false));
   });
 });
 

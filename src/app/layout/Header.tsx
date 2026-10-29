@@ -3,7 +3,9 @@ import { ChevronDown, LogOut, Menu, UserRound } from 'lucide-react';
 import { Link, useLocation } from 'react-router';
 import { useAuth } from '@/app/auth/useAuth';
 import { ROLE_LABEL } from '@/lib/auth/permissions';
+import { GlobalSearch } from './GlobalSearch';
 import { findNav } from './nav';
+import { NotificationBell } from './NotificationBell';
 
 export function Header({ onOpenMobile }: { onOpenMobile: () => void }) {
   const { me, logout } = useAuth();
@@ -37,7 +39,13 @@ export function Header({ onOpenMobile }: { onOpenMobile: () => void }) {
         ) : null}
       </nav>
 
-      {/* 통합 검색·알림 벨·마스킹 토글은 #17 후속 커밋과 #27·#32 에서 이 자리에 들어온다 */}
+      {/* 마스킹 토글은 #32 에서 이 자리에 들어온다 */}
+      {me && (
+        <>
+          <GlobalSearch />
+          <NotificationBell />
+        </>
+      )}
 
       {me && (
         <DropdownMenu.Root>
@@ -52,11 +60,7 @@ export function Header({ onOpenMobile }: { onOpenMobile: () => void }) {
             <ChevronDown className="h-4 w-4 text-slate-400" aria-hidden />
           </DropdownMenu.Trigger>
           <DropdownMenu.Portal>
-            <DropdownMenu.Content
-              align="end"
-              sideOffset={6}
-              className="z-[100] min-w-44 rounded-lg bg-white p-1 text-sm shadow-xl ring-1 ring-slate-200"
-            >
+            <DropdownMenu.Content align="end" sideOffset={6} className="z-[100] min-w-44 rounded-lg bg-white p-1 text-sm shadow-xl ring-1 ring-slate-200">
               <DropdownMenu.Item asChild>
                 <Link to="/profile" className="flex items-center gap-2 rounded-md px-2.5 py-2 outline-none data-[highlighted]:bg-slate-100">
                   <UserRound className="h-4 w-4 text-slate-500" aria-hidden />내 프로필

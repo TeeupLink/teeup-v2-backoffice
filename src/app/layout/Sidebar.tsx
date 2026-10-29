@@ -16,9 +16,7 @@ type Props = {
 // 구조·클래스: shortcrew admin layout.html (디자인스타일가이드 2.2), 색만 teeup 토큰
 export function Sidebar({ collapsed, onToggleCollapsed, mobileOpen, onCloseMobile }: Props) {
   const { can } = useAuth();
-  const sections = NAV.map((s) => ({ ...s, items: s.items.filter((i) => can(i.resource)) })).filter(
-    (s) => s.items.length > 0,
-  );
+  const sections = NAV.map((s) => ({ ...s, items: s.items.filter((i) => can(i.resource)) })).filter((s) => s.items.length > 0);
 
   return (
     <>
@@ -35,10 +33,7 @@ export function Sidebar({ collapsed, onToggleCollapsed, mobileOpen, onCloseMobil
         aria-label="주 메뉴"
       >
         <div className="flex h-16 shrink-0 items-center justify-between border-b border-white/10 px-3 lg:px-4 lg:group-data-[collapsed=true]/sidebar:justify-center lg:group-data-[collapsed=true]/sidebar:px-2">
-          <NavLink
-            to="/dashboard"
-            className="flex min-w-0 items-center gap-2.5 text-white hover:text-primary-50 lg:group-data-[collapsed=true]/sidebar:hidden"
-          >
+          <NavLink to="/dashboard" className="flex min-w-0 items-center gap-2.5 text-white hover:text-primary-50 lg:group-data-[collapsed=true]/sidebar:hidden">
             <img src="/logo.png" alt="" className="h-8 w-8 shrink-0 rounded-lg object-cover ring-1 ring-white/20" />
             <span className="truncate text-base font-bold tracking-tight">티업링크</span>
           </NavLink>
@@ -53,37 +48,37 @@ export function Sidebar({ collapsed, onToggleCollapsed, mobileOpen, onCloseMobil
         </div>
 
         <Tooltip.Provider delayDuration={150}>
-        <nav className="flex-1 overflow-y-auto overflow-x-hidden px-2.5 py-4 pb-6 [scrollbar-width:thin]">
-          {sections.map((section, idx) => (
-            <div key={section.label}>
-              <p
-                className={cn(
-                  'mb-2 px-3 text-[0.65rem] font-bold uppercase tracking-wider text-white/55 lg:group-data-[collapsed=true]/sidebar:sr-only',
-                  idx > 0 && 'mt-5',
-                )}
-              >
-                {section.label}
-              </p>
-              {section.items.map((item) => (
-                <Tooltip.Root key={item.to} open={collapsed ? undefined : false}>
-                  <Tooltip.Trigger asChild>
-                    <SidebarLink item={item} onClick={onCloseMobile} />
-                  </Tooltip.Trigger>
-                  {/* 접힌 사이드바 툴팁. 메뉴 스크롤 영역에 잘리지 않도록 포털로 띄운다 */}
-                  <Tooltip.Portal>
-                    <Tooltip.Content
-                      side="right"
-                      sideOffset={8}
-                      className="z-[100] hidden rounded-md bg-slate-900 px-2 py-1 text-xs font-medium text-white shadow-lg lg:block"
-                    >
-                      {item.label}
-                    </Tooltip.Content>
-                  </Tooltip.Portal>
-                </Tooltip.Root>
-              ))}
-            </div>
-          ))}
-        </nav>
+          <nav className="flex-1 overflow-y-auto overflow-x-hidden px-2.5 py-4 pb-6 [scrollbar-width:thin]">
+            {sections.map((section, idx) => (
+              <div key={section.label}>
+                <p
+                  className={cn(
+                    'mb-2 px-3 text-[0.65rem] font-bold uppercase tracking-wider text-white/55 lg:group-data-[collapsed=true]/sidebar:sr-only',
+                    idx > 0 && 'mt-5',
+                  )}
+                >
+                  {section.label}
+                </p>
+                {section.items.map((item) => (
+                  <Tooltip.Root key={item.to} open={collapsed ? undefined : false}>
+                    <Tooltip.Trigger asChild>
+                      <SidebarLink item={item} onClick={onCloseMobile} />
+                    </Tooltip.Trigger>
+                    {/* 접힌 사이드바 툴팁. 메뉴 스크롤 영역에 잘리지 않도록 포털로 띄운다 */}
+                    <Tooltip.Portal>
+                      <Tooltip.Content
+                        side="right"
+                        sideOffset={8}
+                        className="z-[100] hidden rounded-md bg-slate-900 px-2 py-1 text-xs font-medium text-white shadow-lg lg:block"
+                      >
+                        {item.label}
+                      </Tooltip.Content>
+                    </Tooltip.Portal>
+                  </Tooltip.Root>
+                ))}
+              </div>
+            ))}
+          </nav>
         </Tooltip.Provider>
       </aside>
     </>

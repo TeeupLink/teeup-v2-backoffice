@@ -1,5 +1,8 @@
 import type { ReactElement } from 'react';
 import { createBrowserRouter, Navigate, Outlet, type RouteObject } from 'react-router';
+import { AdminDetailPage } from '@/features/admins/AdminDetailPage';
+import { AdminFormPage } from '@/features/admins/AdminFormPage';
+import { AdminsListPage } from '@/features/admins/AdminsListPage';
 import { AuditLogsPage } from '@/features/audit-logs/AuditLogsPage';
 import { AuditMonthlyPage } from '@/features/audit-logs/AuditMonthlyPage';
 import { ClubDetailPage } from '@/features/clubs/ClubDetailPage';
@@ -24,6 +27,7 @@ import { JoinRequestsPage } from '@/features/join-requests/JoinRequestsPage';
 import { NoticeDetailPage } from '@/features/notices/NoticeDetailPage';
 import { NoticeFormPage as SystemNoticeFormPage } from '@/features/notices/NoticeFormPage';
 import { NoticesListPage } from '@/features/notices/NoticesListPage';
+import { ProfilePage } from '@/features/profile/ProfilePage';
 import { UserDetailPage } from '@/features/users/UserDetailPage';
 import { UserFormPage } from '@/features/users/UserFormPage';
 import { UsersListPage } from '@/features/users/UsersListPage';
@@ -131,9 +135,18 @@ const AREAS: Area[] = [
   { path: 'plans', resource: 'payments', title: '요금제', issue: 31 },
   { path: 'billing/failures', resource: 'payments', title: '청구 실패', issue: 31 },
   { path: 'billing/sandbox', resource: 'billingSandbox', title: '빌링 샌드박스', issue: 31 },
-  { path: 'admins', resource: 'admins', title: '관리자', issue: 27 },
+  {
+    path: 'admins',
+    resource: 'admins',
+    writePaths: ['new', ':id/edit'],
+    title: '관리자',
+    issue: 27,
+    list: <AdminsListPage />,
+    detail: <AdminDetailPage />,
+    forms: { new: <AdminFormPage />, ':id/edit': <AdminFormPage /> },
+  },
   { path: 'audit-logs', resource: 'auditLogs', title: '감사 로그', issue: 28, list: <AuditLogsPage />, pages: { monthly: <AuditMonthlyPage /> } },
-  { path: 'profile', resource: 'profile', title: '내 프로필', issue: 27 },
+  { path: 'profile', resource: 'profile', title: '내 프로필', issue: 27, list: <ProfilePage /> },
 ];
 
 function guarded(resource: Resource, need: Access, children: RouteObject[]): RouteObject {

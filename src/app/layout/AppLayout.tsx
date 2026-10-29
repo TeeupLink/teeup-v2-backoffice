@@ -33,12 +33,7 @@ export function AppLayout() {
 
   return (
     <div className="flex h-full">
-      <Sidebar
-        collapsed={collapsed}
-        onToggleCollapsed={toggleCollapsed}
-        mobileOpen={mobileOpen}
-        onCloseMobile={() => setMobileOpen(false)}
-      />
+      <Sidebar collapsed={collapsed} onToggleCollapsed={toggleCollapsed} mobileOpen={mobileOpen} onCloseMobile={() => setMobileOpen(false)} />
       <div className="flex min-w-0 flex-1 flex-col">
         <Header onOpenMobile={() => setMobileOpen(true)} />
         <main className="min-h-0 flex-1 overflow-y-auto p-4 lg:p-6">
