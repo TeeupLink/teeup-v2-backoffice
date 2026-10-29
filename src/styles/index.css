@@ -1,0 +1,60 @@
+@import 'pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html,
+  body,
+  #root {
+    @apply h-full;
+  }
+  body {
+    @apply overflow-hidden bg-slate-100 font-sans text-slate-900 antialiased;
+  }
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+/* 리치텍스트 본문 (에디터·뷰 공통) */
+@layer components {
+  .rt-content {
+    @apply leading-relaxed text-slate-800;
+  }
+  .rt-content h2 {
+    @apply mb-2 mt-4 text-base font-semibold;
+  }
+  .rt-content p {
+    @apply my-2;
+  }
+  .rt-content ul {
+    @apply my-2 list-disc pl-6;
+  }
+  .rt-content ol {
+    @apply my-2 list-decimal pl-6;
+  }
+  .rt-content blockquote {
+    @apply my-2 border-l-4 border-slate-200 pl-3 text-slate-600;
+  }
+  .rt-content a {
+    @apply text-primary-800 underline;
+  }
+  .rt-content img {
+    @apply my-2 h-auto max-w-full rounded;
+  }
+  .rt-content p.is-editor-empty:first-child::before {
+    content: attr(data-placeholder);
+    @apply pointer-events-none float-left h-0 text-slate-400;
+  }
+}

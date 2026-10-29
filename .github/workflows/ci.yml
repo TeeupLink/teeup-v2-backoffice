@@ -1,0 +1,49 @@
+# GitHub Actions CI — 백오피스 (React + Vite + TypeScript)
+#
+# 배포는 이 워크플로우가 하지 않습니다. golf 루트 Dockerfile 이 `npm run build` 로 dist 를 만들고
+# nginx 가 서빙합니다(CLAUDE.md "배포" 참조). CI 는 병합 조건(타입·린트·테스트·빌드)만 검사합니다.
+#
+# [활성화] #17 에서 TypeScript·Vitest 스크립트가 생겨 PR·push 트리거를 켰습니다. 재구축 중에는 rebuild 브랜치도 검사합니다.
+#
+# [브랜치 전략] feature/* -> dev -> main (운영 긴급 수정은 hotfix/* -> main)
+# main·dev 는 branch protection 으로 직접 push 를 막고 PR + 이 CI 통과를 요구하세요.
+
+name: CI
+
+on:
+  pull_request:
+    branches: [ main, dev, rebuild ]
+  push:
+    branches: [ main, dev, rebuild ]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  frontend:
+    name: Typecheck · Lint · Test · Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: npm
+
+      - name: 의존성 설치
+        run: npm ci
+
+      - name: 타입 체크
+        run: npm run typecheck --if-present
+
+      - name: 린트
+        run: npm run lint --if-present
+
+      - name: 테스트 (Vitest)
+        run: npm test --if-present
+
+      - name: 빌드 검증
+        run: npm run build

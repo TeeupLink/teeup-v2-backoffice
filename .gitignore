@@ -202,3 +202,16 @@ teeup-old
 # *.gif
 # *.svg
 apps/backend/token.json
+
+# ── JUSTICELAB-AP-Framework V0.2 ──
+# 서비스 키 (민감 정보) — template 만 커밋
+.*[Kk]ey*
+!.key.template.md
+# 모든 .env 계열 차단, 값 없는 example 만 커밋
+.env.*
+!.env.example
+# OS / IDE
+.DS_Store
+Thumbs.db
+.vscode/settings.json
+.idea/

@@ -1,0 +1,82 @@
+# main -> dev 역병합 PR 자동 생성
+#
+# [왜 필요한가]
+# hotfix/* 를 main에 병합하면 그 수정은 main에만 있습니다. dev로 되돌려놓지 않으면
+# 다음 dev -> main 릴리스에서 dev 기준으로 덮이면서 **수정이 조용히 사라집니다.**
+# hotfix에서 가장 흔한 사고이고, 사람 기억에 맡기면 반드시 빠집니다.
+#
+# [왜 자동 병합이 아니라 PR인가]
+#   1. dev는 branch protection으로 직접 push를 막습니다. 자동 병합은 이를 우회합니다
+#   2. 충돌이 나면 사람이 풀어야 합니다. PR이면 충돌 상태가 그대로 보입니다
+#   3. PR로 남아야 "언제 무엇이 역병합됐는지" 이력이 추적됩니다
+#
+# [알려진 제약]
+# 기본 GITHUB_TOKEN 으로 만든 PR은 다른 워크플로우를 트리거하지 않습니다(GitHub의 무한루프 방지).
+# 즉 이 PR에서는 CI가 자동으로 돌지 않습니다. CI를 돌리려면 PAT 또는 GitHub App 토큰을 쓰거나,
+# PR 화면에서 "Re-run"으로 수동 실행하세요.
+
+name: Back-merge (main -> dev)
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  back-merge:
+    name: 역병합 PR 생성
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # merge-base 비교에 전체 이력이 필요
+
+      - name: 역병합 PR 생성
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          # dev 브랜치가 아직 없는 초기 프로젝트에서는 할 일이 없다
+          if ! git show-ref --verify --quiet refs/remotes/origin/dev; then
+            echo "dev 브랜치 없음 — 건너뜀"
+            exit 0
+          fi
+
+          # dev가 이미 main을 포함하면 역병합할 것이 없다
+          # (dev -> main 릴리스 직후가 이 경우다)
+          if git merge-base --is-ancestor origin/main origin/dev; then
+            echo "dev가 이미 main을 포함 — 역병합 불필요"
+            exit 0
+          fi
+
+          # 이미 열린 역병합 PR이 있으면 중복 생성하지 않는다
+          EXISTING=$(gh pr list --base dev --head main --state open --json number -q '.[].number')
+          if [ -n "$EXISTING" ]; then
+            echo "이미 열린 역병합 PR 있음: #${EXISTING}"
+            exit 0
+          fi
+
+          gh pr create \
+            --base dev \
+            --head main \
+            --title "역병합: main -> dev" \
+            --body "$(cat <<'EOF'
+          main에 병합된 변경(hotfix 등)을 dev에 반영합니다. 이 워크플로우가 자동 생성했습니다.
+
+          **이 PR을 닫고 넘어가지 마세요.** 병합하지 않으면 다음 `dev -> main` 릴리스에서
+          dev 기준으로 덮이면서 main의 수정이 사라집니다.
+
+          ## 확인
+          - [ ] 충돌이 있다면 해소했다
+          - [ ] dev에서 동작을 확인했다
+
+          > 참고: 기본 GITHUB_TOKEN으로 생성된 PR이라 CI가 자동 실행되지 않습니다.
+          > 필요하면 Checks 탭에서 수동으로 재실행하세요.
+          EOF
+          )"
+
+          echo "역병합 PR 생성 완료"
