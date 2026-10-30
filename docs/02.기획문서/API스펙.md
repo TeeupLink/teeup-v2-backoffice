@@ -203,19 +203,20 @@ PERMISSIONS = {
 | API-ID | Method | URL | 기능 | 상태 | 권한 | F-ID |
 |--------|--------|-----|------|------|------|------|
 | API-120 | GET | /payments | `size`→공통, status·기간·`user_id` | 보강 | SUPPORT(r) | F-122 |
-| API-121 | GET | /payments/{id} | 상세 + 취소 이력 — 감사 VIEW_PII | **신설** | SUPPORT(r) | F-122 |
+| API-121 | GET | /payments/{id} | 상세 + 취소 이력 — 감사 VIEW_PII | 신설 (BE#77) | SUPPORT(r) | F-122 |
 | API-122 | POST | /payments/{id}/cancel | 전액·부분 취소 (`amount?`, `reason`) | 보강 | SUPER | F-122 |
-| API-123 | GET | /payments/export | CSV | **신설** | SUPER | F-006 |
+| API-123 | GET | /payments/export | CSV | 신설 (BE#77) | SUPER | F-006 |
 | API-124 | CRUD | /plans | 요금제 | 기존 | SUPER | F-120 |
 | API-125 | GET | /subscriptions | 페이징·status (20건 고정 해소) | 보강 | SUPPORT(r) | F-121 |
-| API-126 | GET | /subscriptions/{id} | 상세 + 청구 이력 | **신설** | SUPPORT(r) | F-121 |
-| API-127 | POST | /subscriptions/{id}/cancel | 해지 (`reason`) | **신설** | SUPER | F-121 |
-| API-128 | GET | /billing/status | `{enabled, mode: "test"\|"live"}` | **신설** | 인증 | F-124 |
-| API-129 | GET | /billing/failures | 청구 실패 목록 | **신설** | SUPPORT(r) | F-123 |
-| API-130 | POST | /billing/charges/{id}/retry | 수동 재청구 (`enabled=false`면 409) | **신설** | SUPER | F-123 |
-| API-131 | POST | /billing/sandbox/issue | authKey·customerKey → 빌링키 발급 (TEST 모드만) | **신설** | SUPER | F-125 |
-| API-132 | POST | /billing/sandbox/charge | 100원 청구 (TEST 모드만) | **신설** | SUPER | F-125 |
-| API-133 | POST | /api/v1/payments/webhook | 토스 웹훅 (admin 밖, 인증 없음, 출처 재확인) | **신설** | 토스 | F-124 |
+| API-126 | GET | /subscriptions/{id} | 상세 + 청구 이력 | 신설 (BE#77) | SUPPORT(r) | F-121 |
+| API-127 | POST | /subscriptions/{id}/cancel | 해지 (`reason`) | 신설 (BE#77) | SUPER | F-121 |
+| API-128 | GET | /billing/status | `{enabled, mode: "test"\|"live"}` | 신설 (BE#77) | 인증 | F-124 |
+| API-129 | GET | /billing/failures | 청구 실패 목록 | 신설 (BE#77) | SUPPORT(r) | F-123 |
+| API-130 | POST | /billing/charges/{id}/retry | 수동 재청구 (`enabled=false`면 409) | 신설 (BE#77) | SUPER | F-123 |
+| API-131 | POST | /billing/sandbox/issue | authKey·customerKey → 빌링키 발급 (TEST 모드만) | 신설 (BE#77) | SUPER | F-125 |
+| API-132 | POST | /billing/sandbox/charge | 100원 청구 (TEST 모드만) | 신설 (BE#77) | SUPER | F-125 |
+| API-133 | POST | /api/v1/payments/webhook | 토스 웹훅 (admin 밖, 인증 없음, 출처 재확인) | 신설 (BE#77) | 토스 | F-124 |
+| API-134 | POST | /billing/sandbox/cancel | 샌드박스 청구 전액 취소 (TEST 모드만) | 신설 (BE#77) | SUPER | F-125 |
 | - | GET | /refunds | status_filter 무시 버그 — `/payments?status=`로 통합 | **폐기** | - | - |
 
 ### 2.9 시스템
@@ -332,11 +333,11 @@ null = 호출자 권한 밖. 각 숫자는 해당 목록 API에 대시보드 링
 | 항목 | 내용 |
 |------|------|
 | 플래그 | `BILLING_ENABLED`(기본 false). false면 스케줄러 미등록, API-130 → 409 `{detail: "정기결제가 비활성 상태입니다"}` |
-| 모드 | 시크릿 키 접두사 `test_` → `test`, 그 외 `live`. 샌드박스(API-131·132)는 `live`면 403 |
+| 모드 | 시크릿 키 접두사 `test_` → `test`, 비어 있으면 `unset`, 그 외 `live`. 샌드박스(API-131·132·134)는 `test` 가 아니면 403. 샌드박스는 DB 에 남기지 않고, 빌링키는 서버만 풀 수 있는 암호화 토큰으로만 브라우저에 준다 |
 | 발급 | 토스 `POST /v1/billing/authorizations/issue` `{authKey, customerKey}` → billingKey 암호화 저장 |
-| 청구 | 토스 `POST /v1/billing/{billingKey}` `{customerKey, amount, orderId, orderName}` + `Idempotency-Key` |
+| 청구 | 토스 `POST /v1/billing/{billingKey}` `{customerKey, amount, orderId, orderName}` + `Idempotency-Key`. orderId = `sub{구독id}_{YYYYMMDD}_a{시도}`, 멱등키는 시도마다 새로 — 단 응답을 못 받은 시도(NETWORK_ERROR·1시간 넘은 PENDING)는 같은 키로 다시 보내 이중 청구를 막는다 |
 | 스케줄 | 매일 04:00 KST: `next_billing_date <= 오늘`인 ACTIVE 구독 청구 → 성공 시 다음 결제일 갱신, 실패 시 PAST_DUE + 1·3·7일 재시도, 3회 실패 → GAVE_UP + 관리자 알림 BILLING_FAILURE |
-| 웹훅 | 수신 원문 저장 → paymentKey로 토스 조회 API 재확인(위조 방지) → 상태 반영. 같은 이벤트 중복 수신은 `processed_at`으로 무시 |
+| 웹훅 | 수신 원문 저장 → paymentKey로 토스 조회 API 재확인(위조 방지) → 조회 결과로만 상태 반영. 중복 수신은 같은 조회 결과를 다시 쓰므로 무해 |
 
 ### API-150. 감사 로그 목록
 
