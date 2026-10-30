@@ -145,8 +145,8 @@ PERMISSIONS = {
 | API-064 | GET | /users/{id} | 상세 — **감사 VIEW_PII 기록** | 보강 | USER, SUPPORT | F-032 |
 | API-065 | GET | /users/{id}/clubs·meetings·handicap-history | 탭 데이터 — 페이징 추가 (10건 고정 해소) | 보강 | USER, SUPPORT | F-032 |
 | API-066 | GET | /users/{id}/activities | 활동 타임라인 (커서) | **신설** | USER, SUPPORT | F-033 |
-| API-067 | GET | /users/{id}/terms-agreements | 약관 동의 이력 | **신설** | USER, SUPPORT | F-111 |
-| API-068 | GET·PUT | /users/{id}/clubs/{cid}/note | 클럽별 메모 (앱 API 관리자 토큰 불가 시) | 신설(조건부) | USER | F-034 |
+| API-067 | GET | /users/{id}/terms-agreements | 약관 동의 이력 + 게시중 필수 약관 미동의(`missing_required`) | 신설 (BE#74) | USER, SUPPORT | F-111 |
+| API-068 | PUT | /users/{id}/clubs/{cid}/note | 클럽별 메모 (`club_memberships.note`, 앱 구성원 메모와 같은 칸). 조회는 `/users/{id}/clubs` 의 `note` | 신설 (BE#74) | USER | F-034 |
 | - | GET | /users/search | `/lookup/users`로 대체 | **폐기** | - | - |
 
 ### 2.5 클럽
@@ -191,12 +191,12 @@ PERMISSIONS = {
 | API-101 | CRUD | /notices, POST /notices/upload | 공지 | 기존 | CONTENT | F-072 |
 | API-102 | GET | /faq | `items` → 공통 envelope | 보강 | CONTENT | F-073 |
 | API-103 | CRUD | /faq, PATCH /faq/{id}/toggle-active, /faq-categories | FAQ | 기존 | CONTENT | F-073 |
-| API-104 | GET | /terms | 유형별 버전 목록 (`type`) + 동의 수 | 보강 | CONTENT | F-110 |
-| API-105 | POST | /terms | 새 버전(초안) — version, effective_at | 보강 | CONTENT | F-110 |
-| API-106 | PUT | /terms/{id} | 초안 수정 (게시본이면 400) | 보강 | CONTENT | F-110 |
-| API-107 | PUT | /terms/{id}/activate | 게시 — 같은 유형 기존 활성본 자동 비활성(트랜잭션) | 보강 | CONTENT | F-110 |
-| API-108 | GET | /terms/{id}/agreements | 버전별 동의 이력 | **신설** | CONTENT | F-111 |
-| - | PUT | /terms/{type} | 활성본 덮어쓰기 | **폐기** (버전 체계로 대체) | - | - |
+| API-104 | GET | /terms/versions | 유형별 버전 목록 (`type`) + 동의 수, `type` 없으면 유형별 요약 · 상세 `/terms/versions/{id}` | 신설 (BE#69) | CONTENT | F-110 |
+| API-105 | POST | /terms/versions | 새 버전(초안) | 신설 (BE#69) | CONTENT | F-110 |
+| API-106 | PUT·DELETE | /terms/versions/{id} | 초안 수정·삭제 (게시·지난 버전이면 409) | 신설 (BE#69) | CONTENT | F-110 |
+| API-107 | POST | /terms/versions/{id}/publish | 게시 — 같은 유형 기존 게시본 자동 내림 | 신설 (BE#69) | CONTENT | F-110 |
+| API-108 | GET | /terms/versions/{id}/agreements | 버전별 동의 회원 (페이징·q·정렬 agreed_at·nickname) | 신설 (BE#74) | CONTENT | F-111 |
+| - | PUT | /terms/{type} | 예전 화면용. 게시본을 덮어쓰지 않고 새 버전을 만들어 게시 | 유지 (BE#69) | CONTENT | - |
 
 ### 2.8 결제·빌링
 
