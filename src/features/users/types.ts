@@ -45,7 +45,27 @@ export type UserClub = {
   location: string | null;
   status: string;
   member_role: string;
+  /** 클럽별 회원 메모 (F-034). 앱의 구성원 메모와 같은 칸 */
+  note: string | null;
   joined_at: string | null;
+};
+
+/** 회원별 약관 동의 이력 (F-111) */
+export type TermsAgreementItem = {
+  id: number;
+  terms_id: number;
+  type: string | null;
+  version: number | null;
+  title: string | null;
+  status: 'ACTIVE' | 'DRAFT' | 'RETIRED' | null;
+  is_required: boolean | null;
+  agreed_at: string | null;
+  ip_address: string | null;
+};
+
+export type UserTermsAgreements = {
+  items: TermsAgreementItem[];
+  missing_required: { id: number; type: string; version: number; title: string }[];
 };
 
 export type UserMeeting = {

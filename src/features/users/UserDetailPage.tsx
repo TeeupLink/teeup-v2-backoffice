@@ -20,6 +20,7 @@ import { ClubsTab } from './detail/ClubsTab';
 import { GolfTab } from './detail/GolfTab';
 import { MeetingsTab } from './detail/MeetingsTab';
 import { OverviewTab } from './detail/OverviewTab';
+import { TermsTab } from './detail/TermsTab';
 import { DEVICE } from './labels';
 import type { UserDetail } from './types';
 
@@ -115,7 +116,9 @@ export function UserDetailPage() {
         badges={<StatusBadge domain="user" value={u.status} />}
         meta={
           <>
-            <span>평균 {u.average_score ?? u.average_score_init ?? '-'} · 핸디 {u.handicap ?? u.handicap_init ?? '-'}</span>
+            <span>
+              평균 {u.average_score ?? u.average_score_init ?? '-'} · 핸디 {u.handicap ?? u.handicap_init ?? '-'}
+            </span>
             <span>가입 {formatDate(u.created_at)}</span>
             <span>
               최근 로그인 {u.last_login_at ? formatDateTime(u.last_login_at) : '-'}
@@ -132,6 +135,7 @@ export function UserDetailPage() {
           { to: `${base}/clubs`, label: '클럽', count: u.club_count },
           { to: `${base}/meetings`, label: '모임' },
           { to: `${base}/activity`, label: '활동' },
+          { to: `${base}/terms`, label: '약관 동의' },
         ]}
       />
       <Routes>
@@ -140,6 +144,7 @@ export function UserDetailPage() {
         <Route path="clubs" element={<ClubsTab userId={id} />} />
         <Route path="meetings" element={<MeetingsTab userId={id} />} />
         <Route path="activity" element={<ActivityTab userId={id} />} />
+        <Route path="terms" element={<TermsTab userId={id} />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </>

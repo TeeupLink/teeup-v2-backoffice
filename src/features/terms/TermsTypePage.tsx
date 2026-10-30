@@ -31,6 +31,7 @@ import {
   type TermsType,
   type TermsVersion,
 } from './api';
+import { VersionAgreements } from './VersionAgreements';
 
 // SCR-076 약관 버전 (F-076) — 버전 목록, 버전 보기(게시·되돌리기·초안 삭제)
 
@@ -134,7 +135,7 @@ function VersionView({ type }: { type: TermsType }) {
       toast.error('삭제하지 못했습니다', { description: errorMessage(e) });
     }
   };
-  return (
+  const card = (
     <Card
       title={
         <span className="flex items-center gap-2">
@@ -178,6 +179,12 @@ function VersionView({ type }: { type: TermsType }) {
       </p>
       <RichTextView html={v.content} />
     </Card>
+  );
+  return (
+    <>
+      {card}
+      {v.status !== 'DRAFT' && <VersionAgreements versionId={v.id} />}
+    </>
   );
 }
 
