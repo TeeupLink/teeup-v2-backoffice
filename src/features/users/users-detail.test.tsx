@@ -52,7 +52,11 @@ describe('SCR-032 회원 상세', () => {
 
   it('삭제는 사유를 받아 보낸다', async () => {
     const user = userEvent.setup();
-    const { calls, router } = renderApp('/users/7', 'USER_ADMIN', { 'GET /admin/users/7': detail, 'DELETE /admin/users/7': { message: 'ok' }, 'GET /admin/users': { data: [], total: 0 } });
+    const { calls, router } = renderApp('/users/7', 'USER_ADMIN', {
+      'GET /admin/users/7': detail,
+      'DELETE /admin/users/7': { message: 'ok' },
+      'GET /admin/users': { data: [], total: 0 },
+    });
     await screen.findByRole('heading', { name: /golfking/ });
     await user.click(screen.getByRole('button', { name: '회원 삭제' }));
     const dialog = await screen.findByRole('alertdialog');
@@ -64,13 +68,25 @@ describe('SCR-032 회원 상세', () => {
 
   it('활동 탭: 기본 최근 30일, 날짜별로 묶고 더 보기는 커서로', async () => {
     const user = userEvent.setup();
-    const item = (id: number, at: string, type: string, summary: string) => ({ id, event_type: type, summary, target_type: null, target_id: null, meta: { device: 'android' }, ip_masked: '211.***.***.12', created_at: at });
+    const item = (id: number, at: string, type: string, summary: string) => ({
+      id,
+      event_type: type,
+      summary,
+      target_type: null,
+      target_id: null,
+      meta: { device: 'android' },
+      ip_masked: '211.***.***.12',
+      created_at: at,
+    });
     const { calls } = renderApp('/users/7/activity', 'SUPPORT_ADMIN', {
       'GET /admin/users/7': detail,
       'GET /admin/users/7/activities': (c: { query: URLSearchParams }) =>
         c.query.get('cursor')
           ? { items: [item(1, '2026-10-20T09:10:00', 'CLUB_JOIN_REQUEST', '강남 골프회 가입신청')], next_cursor: null }
-          : { items: [item(3, '2026-10-26T21:04:00', 'LOGIN', '로그인'), item(2, '2026-10-26T20:58:00', 'MEETING_CANCEL', '토요 라운딩 참가 취소')], next_cursor: 'c1' },
+          : {
+              items: [item(3, '2026-10-26T21:04:00', 'LOGIN', '로그인'), item(2, '2026-10-26T20:58:00', 'MEETING_CANCEL', '토요 라운딩 참가 취소')],
+              next_cursor: 'c1',
+            },
     });
     expect(await screen.findByText('토요 라운딩 참가 취소')).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: '2026-10-26' })).toBeInTheDocument();
@@ -82,13 +98,28 @@ describe('SCR-032 회원 상세', () => {
 
     await user.click(screen.getByRole('button', { name: '더 보기' }));
     expect(await screen.findByText('강남 골프회 가입신청')).toBeInTheDocument();
-    expect(calls.filter((c) => c.path === '/admin/users/7/activities').pop()!.query.get('cursor')).toBe('c1');
+    expect(
+      calls
+        .filter((c) => c.path === '/admin/users/7/activities')
+        .pop()!
+        .query.get('cursor'),
+    ).toBe('c1');
     expect(screen.getByText(/1년이 지난 활동은 보관하지 않습니다/)).toBeInTheDocument();
   });
 
   it('모임 탭: 라운딩·소셜 탭 전환', async () => {
     const user = userEvent.setup();
-    const m = (id: number, name: string) => ({ meeting_id: id, meeting_name: name, club_name: '강남 골프회', meeting_time: '2026-10-25T07:00:00', status: 'COMPLETED', joined_at: null, has_score: true, gross_score: 90, net_score: 70 });
+    const m = (id: number, name: string) => ({
+      meeting_id: id,
+      meeting_name: name,
+      club_name: '강남 골프회',
+      meeting_time: '2026-10-25T07:00:00',
+      status: 'COMPLETED',
+      joined_at: null,
+      has_score: true,
+      gross_score: 90,
+      net_score: 70,
+    });
     renderApp('/users/7/meetings', 'USER_ADMIN', {
       'GET /admin/users/7': detail,
       'GET /admin/users/7/meetings': { rounding_meetings: [m(1, '토요 라운딩')], social_meetings: [m(2, '송년회')], total_rounding: 1, total_social: 1 },
@@ -97,6 +128,76 @@ describe('SCR-032 회원 상세', () => {
     await user.click(screen.getByRole('tab', { name: /소셜/ }));
     expect(await screen.findByText('송년회')).toBeInTheDocument();
     expect(screen.queryByText('토요 라운딩')).not.toBeInTheDocument();
+  });
+});
+
+describe('SCR-032 클럽 메모·약관 동의 (F-034, F-111)', () => {
+  const clubs = {
+    total_clubs: 1,
+    clubs: [
+      {
+        id: 3,
+        name: '강남 골프회',
+        type: 'GENERAL',
+        location: '서울',
+        status: 'ACTIVE',
+        member_role: 'MEMBER',
+        note: '회비 3월분 미납',
+        joined_at: '2026-03-01T00:00:00',
+      },
+    ],
+  };
+
+  it('클럽 탭: 메모를 보여 주고, 고친 메모만 보낸다', async () => {
+    const user = userEvent.setup();
+    const { calls } = renderApp('/users/7/clubs', 'USER_ADMIN', {
+      'GET /admin/users/7': detail,
+      'GET /admin/users/7/clubs': clubs,
+      'PUT /admin/users/7/clubs/3/note': { club_id: 3, user_id: 7, note: '회비 완납' },
+    });
+    expect(await screen.findByText('회비 3월분 미납')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: '강남 골프회 메모' }));
+    const dialog = await screen.findByRole('dialog');
+    expect(dialog).toHaveTextContent('리더·매니저도 앱에서 봅니다');
+    const box = within(dialog).getByRole('textbox');
+    await user.clear(box);
+    await user.type(box, '회비 완납');
+    await user.click(within(dialog).getByRole('button', { name: '저장' }));
+    await waitFor(() => expect(calls.find((c) => c.method === 'PUT')?.body).toEqual({ note: '회비 완납' }));
+    expect(await screen.findByText('메모를 저장했습니다')).toBeInTheDocument();
+  });
+
+  it('조회 전용 역할은 메모를 볼 수만 있다', async () => {
+    renderApp('/users/7/clubs', 'SUPPORT_ADMIN', { 'GET /admin/users/7': detail, 'GET /admin/users/7/clubs': clubs });
+    expect(await screen.findByText('회비 3월분 미납')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '강남 골프회 메모' })).not.toBeInTheDocument();
+  });
+
+  it('약관 동의 탭: 이력과 미동의 필수 약관 경고', async () => {
+    renderApp('/users/7/terms', 'SUPPORT_ADMIN', {
+      'GET /admin/users/7': detail,
+      'GET /admin/users/7/terms-agreements': {
+        items: [
+          {
+            id: 1,
+            terms_id: 1,
+            type: 'SERVICE',
+            version: 1,
+            title: '이용약관',
+            status: 'RETIRED',
+            is_required: true,
+            agreed_at: '2026-02-01T10:00:00',
+            ip_address: '1.2.3.4',
+          },
+        ],
+        missing_required: [{ id: 2, type: 'SERVICE', version: 2, title: '이용약관' }],
+      },
+    });
+    expect(await screen.findByText('1.2.3.4')).toBeInTheDocument();
+    expect(screen.getByText('지난 버전')).toBeInTheDocument();
+    expect(screen.getByText(/아직 동의하지 않은 것이 있습니다/).parentElement).toHaveTextContent('서비스 이용약관 v2');
+    // 고객지원은 약관 화면 권한이 없어 버전 링크를 걸지 않는다
+    expect(screen.queryByRole('link', { name: 'v1' })).not.toBeInTheDocument();
   });
 });
 
@@ -138,7 +239,10 @@ describe('SCR-031 회원 등록·수정', () => {
 
   it('수정: 바꾼 항목과 사유만 보낸다', async () => {
     const user = userEvent.setup();
-    const { calls, router } = renderApp('/users/7/edit', 'USER_ADMIN', { 'GET /admin/users/7': detail, 'PUT /admin/users/7': { ...detail, nickname: 'golfqueen' } });
+    const { calls, router } = renderApp('/users/7/edit', 'USER_ADMIN', {
+      'GET /admin/users/7': detail,
+      'PUT /admin/users/7': { ...detail, nickname: 'golfqueen' },
+    });
     const nick = await screen.findByLabelText(/닉네임/);
     expect(screen.queryByLabelText(/비밀번호/)).not.toBeInTheDocument();
     await user.clear(nick);

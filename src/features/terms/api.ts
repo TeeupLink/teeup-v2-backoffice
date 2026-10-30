@@ -40,3 +40,14 @@ export const createVersion = (type: TermsType, body: VersionInput) => api<TermsV
 export const updateVersion = (id: number, body: Partial<VersionInput>) => api<TermsVersion>(`${V}/${id}`, { method: 'PUT', body });
 export const publishVersion = (id: number) => api<TermsVersion>(`${V}/${id}/publish`, { method: 'POST' });
 export const deleteVersion = (id: number) => api(`${V}/${id}`, { method: 'DELETE' });
+
+/** 버전별 동의 회원 (F-111) */
+export type VersionAgreement = {
+  id: number;
+  user_id: number;
+  nickname: string;
+  user_status: string | null;
+  agreed_at: string | null;
+  ip_address: string | null;
+};
+export const agreementsPath = (id: number) => `${V}/${id}/agreements`;

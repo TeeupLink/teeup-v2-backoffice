@@ -100,6 +100,31 @@ describe('SCR-076 약관 버전', () => {
   });
 });
 
+describe('SCR-076 버전별 동의 회원 (F-111)', () => {
+  it('게시된 버전 아래에 동의 회원 목록, 검색어는 q 로 보낸다', async () => {
+    const user = userEvent.setup();
+    const { calls } = renderApp('/terms/SERVICE/v/2', 'CONTENT_ADMIN', {
+      'GET /admin/terms/versions/2': { ...ver(2, 2, 'ACTIVE'), content: '<p>현재</p>' },
+      'GET /admin/terms/versions/2/agreements': {
+        items: [{ id: 9, user_id: 7, nickname: 'golfking', user_status: 'ACTIVE', agreed_at: '2026-09-02T10:00:00', ip_address: null }],
+        total: 1,
+        page: 1,
+        size: 20,
+      },
+    });
+    expect(await screen.findByText('golfking')).toBeInTheDocument();
+    await user.type(screen.getByPlaceholderText('닉네임 또는 회원 번호'), 'golf{Enter}');
+    await waitFor(() => expect(calls.some((c) => c.path === '/admin/terms/versions/2/agreements' && c.query.get('q') === 'golf')).toBe(true));
+  });
+
+  it('초안은 동의 회원 목록이 없다', async () => {
+    const { calls } = renderApp('/terms/SERVICE/v/3', 'CONTENT_ADMIN', { 'GET /admin/terms/versions/3': { ...ver(3, 3, 'DRAFT'), content: '<p>초안</p>' } });
+    expect(await screen.findByRole('button', { name: '게시' })).toBeInTheDocument();
+    expect(screen.queryByText('동의한 회원')).not.toBeInTheDocument();
+    expect(calls.some((c) => c.path.endsWith('/agreements'))).toBe(false);
+  });
+});
+
 describe('SCR-076 뒤로 가기', () => {
   it('버전 보기의 목록으로는 그 종류의 버전 목록', async () => {
     renderApp('/terms/SERVICE/v/1', 'CONTENT_ADMIN', { 'GET /admin/terms/versions/1': { ...ver(1, 1, 'RETIRED'), content: '<p>옛날</p>' } });

@@ -1,6 +1,6 @@
 import type { BulkResult, RowId } from '@/components/data-table/bulk';
 import { api } from '@/lib/api/client';
-import type { ActivityPage, HandicapHistory, UserClub, UserDetail, UserMeetings } from './types';
+import type { ActivityPage, HandicapHistory, UserClub, UserDetail, UserMeetings, UserTermsAgreements } from './types';
 
 export const USERS_PATH = '/admin/users';
 
@@ -44,6 +44,9 @@ export const updateUser = (id: number, body: UserInput) => api<UserDetail>(`${US
 export const deleteUser = (id: number, reason: string) => api(`${USERS_PATH}/${id}`, { method: 'DELETE', query: { reason } });
 
 export const fetchUserClubs = (id: number) => api<{ clubs: UserClub[]; total_clubs: number }>(`${USERS_PATH}/${id}/clubs`);
+export const updateMemberNote = (id: number, clubId: number, note: string) =>
+  api<{ note: string | null }>(`${USERS_PATH}/${id}/clubs/${clubId}/note`, { method: 'PUT', body: { note } });
+export const fetchUserTermsAgreements = (id: number) => api<UserTermsAgreements>(`${USERS_PATH}/${id}/terms-agreements`);
 export const fetchUserMeetings = (id: number, page: number, limit: number) => api<UserMeetings>(`${USERS_PATH}/${id}/meetings`, { query: { page, limit } });
 export const fetchHandicapHistory = (id: number, page: number, limit: number) =>
   api<HandicapHistory>(`${USERS_PATH}/${id}/handicap-history`, { query: { page, limit } });
