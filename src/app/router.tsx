@@ -5,6 +5,13 @@ import { AdminFormPage } from '@/features/admins/AdminFormPage';
 import { AdminsListPage } from '@/features/admins/AdminsListPage';
 import { AuditLogsPage } from '@/features/audit-logs/AuditLogsPage';
 import { AuditMonthlyPage } from '@/features/audit-logs/AuditMonthlyPage';
+import { FailuresPage } from '@/features/billing/FailuresPage';
+import { PaymentDetailPage } from '@/features/billing/PaymentDetailPage';
+import { PaymentsListPage } from '@/features/billing/PaymentsListPage';
+import { PlansPage } from '@/features/billing/PlansPage';
+import { SandboxPage } from '@/features/billing/SandboxPage';
+import { SubscriptionDetailPage } from '@/features/billing/SubscriptionDetailPage';
+import { SubscriptionsListPage } from '@/features/billing/SubscriptionsListPage';
 import { ClubDetailPage } from '@/features/clubs/ClubDetailPage';
 import { ClubFormPage } from '@/features/clubs/ClubFormPage';
 import { NoticeFormPage } from '@/features/clubs/content/NoticeFormPage';
@@ -154,11 +161,11 @@ const AREAS: Area[] = [
     detail: <TermsTypePage />,
     forms: { new: <TermsFormPage />, 'edit/:vid': <TermsFormPage /> },
   },
-  { path: 'payments', resource: 'payments', title: '결제 내역', issue: 31 },
-  { path: 'subscriptions', resource: 'payments', title: '구독', issue: 31 },
-  { path: 'plans', resource: 'payments', title: '요금제', issue: 31 },
-  { path: 'billing/failures', resource: 'payments', title: '청구 실패', issue: 31 },
-  { path: 'billing/sandbox', resource: 'billingSandbox', title: '빌링 샌드박스', issue: 31 },
+  { path: 'payments', resource: 'payments', title: '결제 내역', issue: 31, list: <PaymentsListPage />, detail: <PaymentDetailPage /> },
+  { path: 'subscriptions', resource: 'payments', title: '구독', issue: 31, list: <SubscriptionsListPage />, detail: <SubscriptionDetailPage /> },
+  { path: 'plans', resource: 'payments', title: '요금제', issue: 31, list: <PlansPage /> },
+  { path: 'billing/failures', resource: 'payments', title: '청구 실패', issue: 31, list: <FailuresPage /> },
+  { path: 'billing/sandbox', resource: 'billingSandbox', title: '빌링 샌드박스', issue: 31, list: <SandboxPage /> },
   {
     path: 'admins',
     resource: 'admins',

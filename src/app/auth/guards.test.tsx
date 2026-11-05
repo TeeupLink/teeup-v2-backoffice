@@ -10,6 +10,7 @@ function renderAt(path: string, me: object | null) {
     'fetch',
     vi.fn(async (url: string) => {
       if (url.endsWith('/admin/me')) return me ? Response.json(me) : Response.json({ detail: '만료' }, { status: 401 });
+      if (url.includes('/admin/plans')) return Response.json({ items: [], total: 0 });
       return Response.json({});
     }),
   );
@@ -45,9 +46,10 @@ describe('라우트 가드', () => {
   });
 
   it('조회 권한이 있으면 들어가고, 쓰기 작업은 보이지 않는다', async () => {
-    // 아직 이식 전인 영역으로 확인 (조회 권한 = SUPPORT_ADMIN 의 payments read)
-    renderAt('/payments', meAs('SUPPORT_ADMIN'));
-    expect(await screen.findByText('결제 내역 — 준비 중')).toBeInTheDocument();
+    // 조회 권한 = SUPPORT_ADMIN 의 payments read
+    renderAt('/plans', meAs('SUPPORT_ADMIN'));
+    expect(await screen.findByRole('heading', { name: '요금제' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '요금제' })).not.toBeInTheDocument();
   });
 
   it('메뉴는 역할 범위만 보인다', async () => {
