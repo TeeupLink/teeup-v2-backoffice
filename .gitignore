@@ -187,6 +187,10 @@ uploads/
 public
 # 앱별 public 폴더는 추적 (예외 처리)
 !apps/**/public/
+# teeup: 이 저장소는 apps/ 모노레포가 아니라 루트 src/ 구조라 위 예외가 안 먹는다.
+# 루트 public/ 의 로고·파비콘이 배포(dist)에 포함되도록 추적한다.
+!/public/
+!/public/logo.png
 
 # Custom: Old TypeScript version
 old-ts-version/

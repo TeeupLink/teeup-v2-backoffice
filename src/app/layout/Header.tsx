@@ -24,18 +24,16 @@ export function Header({ onOpenMobile }: { onOpenMobile: () => void }) {
         <Menu className="h-5 w-5" />
       </button>
 
+      {/* 대시보드처럼 섹션명과 메뉴명이 같은 최상위 화면은 브레드크럼이 바로 아래 페이지 제목과
+          똑같이 중복돼 거슬린다. 그런 단일 크럼은 숨기고, 두 단계 이상일 때만 경로를 보여준다. */}
       <nav aria-label="현재 위치" className="min-w-0 flex-1 truncate text-sm text-slate-500">
-        {nav ? (
+        {nav && nav.section.label !== nav.item.label ? (
           <>
             <span>{nav.section.label}</span>
-            {nav.section.label !== nav.item.label && (
-              <>
-                <span className="mx-1.5 text-slate-300">/</span>
-                <Link to={nav.item.to} className="font-medium text-slate-900 hover:underline">
-                  {nav.item.label}
-                </Link>
-              </>
-            )}
+            <span className="mx-1.5 text-slate-300">/</span>
+            <Link to={nav.item.to} className="font-medium text-slate-900 hover:underline">
+              {nav.item.label}
+            </Link>
           </>
         ) : null}
       </nav>
