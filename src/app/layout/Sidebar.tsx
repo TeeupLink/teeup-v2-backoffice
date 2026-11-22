@@ -6,6 +6,13 @@ import { useAuth } from '@/app/auth/useAuth';
 import { cn } from '@/lib/cn';
 import { NAV, type NavItem } from './nav';
 
+// 로고 로드 실패 시 쓰는 인라인 SVG 배지(브랜드 그린 바탕 + 흰 'T'). 네트워크를 타지 않아 항상 뜬다.
+const LOGO_FALLBACK =
+  'data:image/svg+xml;utf8,' +
+  encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="%2343a047"/><text x="16" y="22" font-family="system-ui,sans-serif" font-size="18" font-weight="700" text-anchor="middle" fill="white">T</text></svg>',
+  );
+
 type Props = {
   collapsed: boolean;
   onToggleCollapsed: () => void;
@@ -34,7 +41,16 @@ export function Sidebar({ collapsed, onToggleCollapsed, mobileOpen, onCloseMobil
       >
         <div className="flex h-16 shrink-0 items-center justify-between border-b border-white/10 px-3 lg:px-4 lg:group-data-[collapsed=true]/sidebar:justify-center lg:group-data-[collapsed=true]/sidebar:px-2">
           <NavLink to="/dashboard" className="flex min-w-0 items-center gap-2.5 text-white hover:text-primary-50 lg:group-data-[collapsed=true]/sidebar:hidden">
-            <img src="/logo.png" alt="" className="h-8 w-8 shrink-0 rounded-lg object-cover ring-1 ring-white/20" />
+            {/* 로고 파일이 없을 때(배포 누락 등) 깨진 이미지 아이콘 대신 브랜드 색 배지로 대체한다 */}
+            <img
+              src="/logo.png"
+              alt=""
+              className="h-8 w-8 shrink-0 rounded-lg object-cover ring-1 ring-white/20"
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = LOGO_FALLBACK;
+              }}
+            />
             <span className="truncate text-base font-bold tracking-tight">티업링크</span>
           </NavLink>
           <button
@@ -48,7 +64,7 @@ export function Sidebar({ collapsed, onToggleCollapsed, mobileOpen, onCloseMobil
         </div>
 
         <Tooltip.Provider delayDuration={150}>
-          <nav className="flex-1 overflow-y-auto overflow-x-hidden px-2.5 py-4 pb-6 [scrollbar-width:thin]">
+          <nav className="sidebar-scroll flex-1 overflow-y-auto overflow-x-hidden px-2.5 py-4 pb-6">
             {sections.map((section, idx) => (
               <div key={section.label}>
                 <p
